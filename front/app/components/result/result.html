@@ -1,0 +1,16 @@
+<div class="row">
+    <div class="col-md-2 col-md-offset-2 text-right">
+        <label class="label_center">Mis resultados: </label>
+    </div>
+    <div class="col-md-4">
+        <select class="form-control" ng-model="vm.result_selected" ng-change="vm.selectResult()">
+            <option ng-repeat="result in vm.results" value="{{ result }}">{{ result.name }}</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <button id="btn-add" class="btn btn-success btn-md" ng-click="vm.showModalResult('add-result', 0)">
+            <span class="glyphicon glyphicon-plus"></span>
+            <span class="glyphicon-class">Agregar nuevo</span>
+        </button>
+    </div>
+</div>
