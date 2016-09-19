@@ -18,11 +18,10 @@ class ResultController extends Controller
     public function index()
     {
         //
-        return [
-                    ["name" => "a"], 
-                    ["name" => "b"],
-                    ["name" => "c"]
-                ];
+        return Result::where('user_id', 1)
+                    ->orderBy('created_at', 'desc')
+                    ->take(10)
+                    ->get();
     }
 
     /**
@@ -32,7 +31,7 @@ class ResultController extends Controller
      */
     public function create()
     {
-        //
+        
     }
 
     /**
@@ -43,7 +42,12 @@ class ResultController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $name = $request->input('name');
+        Result::create(array(
+            'user_id' => 1,
+            'name' => $name
+        ));
+        return $name;
     }
 
     /**

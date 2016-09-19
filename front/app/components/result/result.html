@@ -1,16 +1,126 @@
 <div class="row">
-    <div class="col-md-2 col-md-offset-2 text-right">
-        <label class="label_center">Mis resultados: </label>
+    <div class="col-md-2 col-md-offset-6 text-right">
+        <label class="label_center">Resultados recientes: </label>
     </div>
     <div class="col-md-4">
-        <select class="form-control" ng-model="vm.result_selected" ng-change="vm.selectResult()">
+        <select class="form-control" ng-model="vm.last_results" ng-change="vm.selectResult()">
             <option ng-repeat="result in vm.results" value="{{ result }}">{{ result.name }}</option>
         </select>
     </div>
-    <div class="col-md-2">
-        <button id="btn-add" class="btn btn-success btn-md" ng-click="vm.showModalResult('add-result', 0)">
-            <span class="glyphicon glyphicon-plus"></span>
-            <span class="glyphicon-class">Agregar nuevo</span>
-        </button>
+</div>
+
+<div class="row row__highlight">
+    <div ng-show="vm.new">
+        <div class="col-md-8 col-md-offset-2 text-center">
+            <div class="alert alert-warning" role="alert" ng-show="vm.help_new_result">
+                Recuerde considerar que el resultado debe ser: 
+                <br>
+                <br>* Conmensurable (Que se pueda Medir)
+                <br>* Imposible (no logrado por los medios que usualmente dispone)
+                <br>* Denso (Tangible)
+                <br>* Convergente (Que integre)
+            </div>
+
+            <form class="form-horizontal" name="new_result" ng-submit="vm.createResult()">
+                <div class="form-group">
+                    <label for="new_result_name">
+                        Agregar un nuevo resultado
+                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true" 
+                              ng-click="vm.help_new_result = !vm.help_new_result"
+                              ></span>
+                    </label>
+                    <input class="form-control text-center" name="name" id="new_result_name" type="text" placeholder="Nombre del resultado" 
+                           ng-model="vm.new_result.name"
+                           ng-required="true">
+                    <span class="text-danger" ng-show="new_result.name.$invalid && new_result.name.$touched">
+                        El nombre es un campo obligatorio
+                    </span>
+                </div>
+                <button type="submit" class="btn btn-success btn-md" 
+                        ng-disabled="new_result.$invalid">
+                    Crear
+                </button>
+            </form>
+        </div>
+    </div>
+    <div ng-show="!vm.new">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h3>{{ vm.result_selected.name }}</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <div class="btn-group" role="group">
+                    <button class="btn btn-default btn-md" ng-click="index.showModalResult('add-update', 0)">
+                        <span class="glyphicon glyphicon-plus"></span>
+                        <span class="glyphicon-class">Agregar frase resultado</span>
+                    </button>
+                    <button class="btn btn-default btn-md" ng-click="index.showResultHistory()">
+                        <span class="glyphicon glyphicon-th-list"></span>
+                        <span class="glyphicon-class">Histórico</span>  
+                    </button>
+                    <button class="btn btn-default btn-md" ng-click="">
+                        <span class="glyphicon glyphicon-list-alt"></span>
+                        <span class="glyphicon-class">Informe</span>  
+                    </button>
+                    <div class="btn-group" role="group">
+                        <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                            <span class="glyphicon glyphicon-check"></span>
+                            <span class="glyphicon-class">Analizar</span>
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                            <li>
+                                <a href="#" id="btn-peirce" ng-click="index.selectMethod('peirce')">
+                                    <span class="glyphicon glyphicon-certificate"></span>
+                                    <span class="glyphicon-class">Peirce</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a ng-click="index.selectMethod('')">
+                                    <span class="glyphicon glyphicon-tasks"></span>
+                                    <span class="glyphicon-class">3 registros</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a ng-click="index.selectMethod('')">
+                                    <span class="glyphicon glyphicon-th-large"></span>
+                                    <span class="glyphicon-class">4 discursos</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a ng-click="index.selectMethod('')">
+                                    <span class="glyphicon glyphicon-sort"></span>
+                                    <span class="glyphicon-class">11 pasos</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a ng-click="index.selectMethod('')">
+                                    <span class="glyphicon glyphicon-triangle-top"></span>
+                                    <span class="glyphicon-class">Rhen</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a ng-click="index.selectMethod('')">
+                                    <span class="glyphicon glyphicon-refresh"></span>
+                                    <span class="glyphicon-class">WU-WEI</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a ng-click="index.selectMethod('')">
+                                    <span class="glyphicon glyphicon-check"></span>
+                                    <span class="glyphicon-class">Sutilización</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <button class="btn btn-primary btn-md">
+                        <span class="glyphicon glyphicon-star"></span>
+                        <span class="glyphicon-class">Logrado</span>  
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

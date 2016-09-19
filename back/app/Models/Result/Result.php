@@ -2,27 +2,42 @@
 
 namespace Magia\Models\Result;
 
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Result extends Authenticatable
-{
+class Result extends Model {
+
+    use SoftDeletes;
     protected $table = 'rs_result';
-    
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
-        'name', 'email', 'password',
-    ];
+    protected $fillable = ['user_id', 'result_beyond_id', 'result_sadhana_id', 
+                            'result_merge_id', 'name', 'completed'];
+    protected $dates = ['created_at', 'updated_at', 'deleted_at'];
 
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
-    protected $hidden = [
-        'password', 'remember_token',
-    ];
+    public function result_phrases() {
+        return $this->hasMany('\Magia\Result\ResultPhrase', 'result_id', 'id');
+    }
+
+    public function beyond_son() {
+        return $this->hasOne('\Magia\Result\Result', 'result_beyond_id', 'id');
+    }
+
+    public function beyond_parent() {
+        return $this->belongsTo('\Magia\Result\Result', 'result_beyond_id', 'id');
+    }
+
+    public function merge_sons() {
+        return $this->hasMany('\Magia\Result\Result', 'result_merge_id', 'id');
+    }
+
+    public function merge_parent() {
+        return $this->belongsTo('\Magia\Result\Result', 'result_merge_id', 'id');
+    }
+
+    public function sadhana_sons() {
+        return $this->hasMany('\Magia\Result\Result', 'result_sadhana_id', 'id');
+    }
+
+    public function sadhana_parent() {
+        return $this->belongsTo('\Magia\Result\Result', 'result_sadhana_id', 'id');
+    }
 }
