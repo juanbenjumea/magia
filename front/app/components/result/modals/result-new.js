@@ -3,14 +3,15 @@
     'use strict';
 
     angular
-        .module('magic')
-        .controller("NewResult",
+        .module('app.result')
+        .controller("ResultNew",
             ['$uibModalInstance', 'items'
-            , NewResult]);
+            , ResultNew]);
 
-    function NewResult($uibModalInstance, items){
+    function ResultNew($uibModalInstance, items){
         var vm = this;
-        vm.items = items;
+        //vm.items = items;
+        vm.items = [1,2,3];
         vm.selected = {
             item: vm.items[0]
         };

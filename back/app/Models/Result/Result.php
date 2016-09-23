@@ -14,30 +14,30 @@ class Result extends Model {
     protected $dates = ['created_at', 'updated_at', 'deleted_at'];
 
     public function result_phrases() {
-        return $this->hasMany('\Magia\Result\ResultPhrase', 'result_id', 'id');
+        return $this->hasMany('\Magia\Models\Result\ResultPhrase', 'result_id', 'id');
     }
 
     public function beyond_son() {
-        return $this->hasOne('\Magia\Result\Result', 'result_beyond_id', 'id');
+        return $this->hasOne('\Magia\Models\Result\Result', 'result_beyond_id', 'id');
     }
 
     public function beyond_parent() {
-        return $this->belongsTo('\Magia\Result\Result', 'result_beyond_id', 'id');
+        return $this->belongsTo('\Magia\Models\Result\Result', 'result_beyond_id', 'id');
     }
 
     public function merge_sons() {
-        return $this->hasMany('\Magia\Result\Result', 'result_merge_id', 'id');
+        return $this->hasMany('\Magia\Models\Result\Result', 'result_merge_id', 'id');
     }
 
     public function merge_parent() {
-        return $this->belongsTo('\Magia\Result\Result', 'result_merge_id', 'id');
+        return $this->belongsTo('\Magia\Models\Result\Result', 'result_merge_id', 'id');
     }
 
     public function sadhana_sons() {
-        return $this->hasMany('\Magia\Result\Result', 'result_sadhana_id', 'id');
+        return $this->hasMany('\Magia\Models\Result\Result', 'result_sadhana_id', 'id');
     }
 
     public function sadhana_parent() {
-        return $this->belongsTo('\Magia\Result\Result', 'result_sadhana_id', 'id');
+        return $this->belongsTo('\Magia\Models\Result\Result', 'result_sadhana_id', 'id');
     }
 }

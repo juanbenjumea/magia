@@ -2,6 +2,10 @@
     display:none !important
 }
 
+.textarea__medium {
+    height: 150px !important;
+}
+
 .btn-list{
     margin: 2px 0;
 }
@@ -13,8 +17,8 @@
 .row__highlight {
     background-color: #fff9ed;
     color: #9a0f0f;
-    padding: 30px 0;
-    border-bottom: 1px #eee solid;
+    padding: 20px;
+    border: 1px #f1dcb1 solid;
 }
 
 .square {

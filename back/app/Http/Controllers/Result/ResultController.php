@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Magia\Http\Requests;
 use Magia\Http\Controllers\Controller;
 use Magia\Models\Result\Result;
+use Magia\Models\Result\ResultPhrase;
 
 class ResultController extends Controller
 {
@@ -17,8 +18,10 @@ class ResultController extends Controller
      */
     public function index()
     {
-        //
-        return Result::where('user_id', 1)
+        return Result::with(['result_phrases' => function ($query) {
+                                $query->orderBy('created_at', 'desc'); 
+                            }])
+                    ->where('user_id', 1)
                     ->orderBy('created_at', 'desc')
                     ->take(10)
                     ->get();
@@ -43,11 +46,10 @@ class ResultController extends Controller
     public function store(Request $request)
     {
         $name = $request->input('name');
-        Result::create(array(
+        return Result::create(array(
             'user_id' => 1,
             'name' => $name
         ));
-        return $name;
     }
 
     /**

@@ -7,10 +7,18 @@
             <option ng-repeat="result in vm.results" value="{{ result }}">{{ result.name }}</option>
         </select>
     </div>
+    <div class="col-md-12 text-right">
+        <button id="btn-add" class="btn btn-default">
+            <span class="glyphicon glyphicon-list"></span> Ver todos
+        </button>
+        <button id="btn-add" class="btn btn-success" ng-click="vm.toggleFlagNewResult(true)">
+            <span class="glyphicon glyphicon-plus"></span> Nuevo resultado
+        </button>
+    </div>
 </div>
 
 <div class="row row__highlight">
-    <div ng-show="vm.new">
+    <div class="row" ng-show="vm.flag_new_result">
         <div class="col-md-8 col-md-offset-2 text-center">
             <div class="alert alert-warning" role="alert" ng-show="vm.help_new_result">
                 Recuerde considerar que el resultado debe ser: 
@@ -36,90 +44,128 @@
                         El nombre es un campo obligatorio
                     </span>
                 </div>
-                <button type="submit" class="btn btn-success btn-md" 
-                        ng-disabled="new_result.$invalid">
-                    Crear
+                <button type="submit" class="btn btn-success" 
+                        ng-disabled="new_result.$invalid || vm.btn_waiting_save_result">
+                    <span class="glyphicon glyphicon-floppy-disk"></span> Guardar
                 </button>
             </form>
         </div>
     </div>
-    <div ng-show="!vm.new">
+    <div ng-show="!vm.flag_new_result">
         <div class="row">
             <div class="col-md-12 text-center">
                 <h3>{{ vm.result_selected.name }}</h3>
+                <p>
+                    {{ vm.result_phrase }}
+                </p>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-12 text-center">
+    </div>
+</div>
+
+<div ng-show="!vm.flag_new_result">
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <div class="btn-group" role="group">
+                <button class="btn btn-default" ng-click="vm.toggleTabResultOption(1)">
+                    <span class="glyphicon glyphicon-check"></span> Frase resultado
+                </button>
+                <button class="btn btn-default" ng-click="vm.toggleTabResultOption(2)">
+                    <span class="glyphicon glyphicon-random"></span> Desvío
+                </button>
+                <button class="btn btn-default" ng-click="vm.toggleTabResultOption(3)">
+                    <span class="glyphicon glyphicon-warning-sign"></span> Fallido
+                </button>
                 <div class="btn-group" role="group">
-                    <button class="btn btn-default btn-md" ng-click="index.showModalResult('add-update', 0)">
-                        <span class="glyphicon glyphicon-plus"></span>
-                        <span class="glyphicon-class">Agregar frase resultado</span>
+                    <button class="btn btn-default dropdown-toggle" type="button" 
+                            ng-click="vm.toggleTabResultOption(0)"
+                            data-toggle="dropdown">
+                        <span class="glyphicon glyphicon-eye-open"></span> Analizar
+                        <span class="caret"></span>
                     </button>
-                    <button class="btn btn-default btn-md" ng-click="index.showResultHistory()">
-                        <span class="glyphicon glyphicon-th-list"></span>
-                        <span class="glyphicon-class">Histórico</span>  
-                    </button>
-                    <button class="btn btn-default btn-md" ng-click="">
-                        <span class="glyphicon glyphicon-list-alt"></span>
-                        <span class="glyphicon-class">Informe</span>  
-                    </button>
-                    <div class="btn-group" role="group">
-                        <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
-                            <span class="glyphicon glyphicon-check"></span>
-                            <span class="glyphicon-class">Analizar</span>
-                            <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                            <li>
-                                <a href="#" id="btn-peirce" ng-click="index.selectMethod('peirce')">
-                                    <span class="glyphicon glyphicon-certificate"></span>
-                                    <span class="glyphicon-class">Peirce</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a ng-click="index.selectMethod('')">
-                                    <span class="glyphicon glyphicon-tasks"></span>
-                                    <span class="glyphicon-class">3 registros</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a ng-click="index.selectMethod('')">
-                                    <span class="glyphicon glyphicon-th-large"></span>
-                                    <span class="glyphicon-class">4 discursos</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a ng-click="index.selectMethod('')">
-                                    <span class="glyphicon glyphicon-sort"></span>
-                                    <span class="glyphicon-class">11 pasos</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a ng-click="index.selectMethod('')">
-                                    <span class="glyphicon glyphicon-triangle-top"></span>
-                                    <span class="glyphicon-class">Rhen</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a ng-click="index.selectMethod('')">
-                                    <span class="glyphicon glyphicon-refresh"></span>
-                                    <span class="glyphicon-class">WU-WEI</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a ng-click="index.selectMethod('')">
-                                    <span class="glyphicon glyphicon-check"></span>
-                                    <span class="glyphicon-class">Sutilización</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                    <button class="btn btn-primary btn-md">
-                        <span class="glyphicon glyphicon-star"></span>
-                        <span class="glyphicon-class">Logrado</span>  
-                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <li>
+                            <a href="#" id="btn-peirce" ng-click="index.selectMethod('peirce')">
+                                <span class="glyphicon glyphicon-certificate"></span> Peirce
+                            </a>
+                        </li>
+                        <li>
+                            <a ng-click="index.selectMethod('')">
+                                <span class="glyphicon glyphicon-tasks"></span> 3 registros
+                            </a>
+                        </li>
+                        <li>
+                            <a ng-click="index.selectMethod('')">
+                                <span class="glyphicon glyphicon-th-large"></span> 4 discursos
+                            </a>
+                        </li>
+                        <li>
+                            <a ng-click="index.selectMethod('')">
+                                <span class="glyphicon glyphicon-sort"></span> 11 pasos
+                            </a>
+                        </li>
+                        <li>
+                            <a ng-click="index.selectMethod('')">
+                                <span class="glyphicon glyphicon-triangle-top"></span> Rhen
+                            </a>
+                        </li>
+                        <li>
+                            <a ng-click="index.selectMethod('')">
+                                <span class="glyphicon glyphicon-refresh"></span> WU-WEI
+                            </a>
+                        </li>
+                        <li>
+                            <a ng-click="index.selectMethod('')">
+                                <span class="glyphicon glyphicon-check"></span> Sutilización
+                            </a>
+                        </li>
+                    </ul>
                 </div>
+            </div>
+            <button class="btn btn-primary">
+                <span class="glyphicon glyphicon-star"></span> Logrado
+            </button>
+        </div>
+    </div>
+    <div class="row" ng-show="vm.tab_result_option == 1">
+        <div class="col-md-5 col-md-offset-1 text-center">
+            <div class="form-group">
+                <label>Frase resultado</label>
+                <textarea class="form-control textarea__medium" ng-model="vm.result_phrase"></textarea>
+            </div>
+            <div class="text-right">
+                <button class="btn btn-default btn-sm" title="Deshacer cambios">
+                    <span class="glyphicon glyphicon-erase"></span>
+                </button>
+                <button class="btn btn-default btn-sm" title="Editar frase actual">
+                    <span class="glyphicon glyphicon-pencil"></span>
+                </button>
+                <button class="btn btn-success btn-sm" title="Guardar nueva frase resultado">
+                    <span class="glyphicon glyphicon-floppy-save"></span>
+                </button>
+                
+            </div>
+        </div>
+        <div class="col-md-5 text-center">
+            <div class="form-group">
+                <label>Caos</label>
+                <textarea class="form-control textarea__medium"></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="row" ng-show="vm.tab_result_option == 2">
+        <div class="col-md-8 col-md-offset-2 text-center">
+            <div class="form-group">
+                <label>Desvío</label>
+                <textarea class="form-control"></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="row" ng-show="vm.tab_result_option == 3">
+        <div class="col-md-8 col-md-offset-2 text-center">
+            <div class="form-group">
+                <label>Fallido</label>
+                <textarea class="form-control"></textarea>
             </div>
         </div>
     </div>

@@ -3,8 +3,10 @@
     'use strict';
 
     angular
-        .module('magic')
-        .factory('resultService', ['$resource', 'API_URL', resultService]);
+        .module('app.result')
+        .factory('resultService', resultService);
+
+    resultService.$inject = ['$resource', 'API_URL'];
 
     function resultService($resource, API_URL){
         
@@ -21,7 +23,7 @@
 
         function createResult(new_result) {
             var Result = $resource(API_URL + "result");
-            Result.save(new_result);
+            return Result.save(new_result);
         }
     }
 })();

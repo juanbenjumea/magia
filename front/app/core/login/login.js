@@ -3,11 +3,11 @@
     'use strict'
     
     angular
-        .module('magic')
-        .controller('LoginController', LoginController);
+        .module('app.core')
+        .controller('Login', Login);
 
-    function LoginController(){
-        
+    function Login(){
+
         var vm = this;
         
         vm.login = login;
