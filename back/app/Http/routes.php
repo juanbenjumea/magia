@@ -22,3 +22,4 @@ Route::group(['prefix' => 'api'], function () {
 });
 
 Route::resource('result', 'Result\ResultController');
+Route::resource('result-phrase', 'Result\ResultPhraseController');

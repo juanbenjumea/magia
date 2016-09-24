@@ -5,7 +5,7 @@
     angular
         .module('app.result')
         .controller("Result", Result);
-        
+
     Result.$inject = ['$uibModal', '$log', 'resultService'];
 
     function Result($uibModal, $log, resultService){
@@ -13,17 +13,22 @@
 
         // Bind variables
         vm.createResult = createResult;
+        vm.createResultPhrase = createResultPhrase;
         vm.modalOpenAddResult = modalOpenAddResult;
+        vm.newResultPhraseIni = newResultPhraseIni;
+        vm.newResultPhraseUndo = newResultPhraseUndo;
         vm.selectResult = selectResult;
         vm.toggleFlagNewResult = toggleFlagNewResult;
         vm.toggleTabResultOption = toggleTabResultOption;
+        vm.updateResultPhrase = updateResultPhrase;
 
         vm.result_selected = {};
         vm.new_result = {};
+        vm.new_result_phrase = {};
+        vm.result_phrases = {};
         vm.help_new_result = false;
         vm.flag_new_result = true;
-        vm.tab_result_option = 0;
-
+        
         activate();
 
         function activate(){
@@ -40,7 +45,6 @@
             }
             
             function getResultsError(error){
-                console.log('error');
                 console.log(error);
             }
         }
@@ -65,18 +69,69 @@
                 vm.results.unshift(data);
                 selectResult(data);
                 vm.btn_waiting_save_result = false;
+                vm.flag_new_result_phrase = true;
             }
             
             function createResultError(error){
-                console.log('error');
                 console.log(error);
             }
+        }
+
+        function updateResultPhrase(){
+            return resultService.updateResultPhrase(vm.new_result_phrase, vm.result_phrases[0].id).$promise
+                    .then(updateResultPhraseComplete)
+                    .catch(updateResultPhraseError);
+
+            function updateResultPhraseComplete(){
+                
+            }
+
+            function updateResultPhraseError(){
+                
+            }
+        }
+
+        function createResultPhrase(){
+
+            vm.btn_waiting_save_result_phrase = true;
+            vm.new_result_phrase.result_id = vm.result_selected.id;
+            return resultService.createResultPhrase(vm.new_result_phrase).$promise
+                    .then(createResultPhraseComplete)
+                    .catch(createResultPhraseError);
+            vm.new_result_phrase = {};
+
+            function createResultPhraseComplete(data , status, headers, config){
+                vm.flag_new_result_phrase = true;
+                vm.btn_waiting_save_result_phrase = false;
+                vm.result_phrases.unshift(data);
+            }
+            
+            function createResultPhraseError(error){
+                console.log(error);
+            }
+        }
+
+        function newResultPhraseIni(){
+            vm.new_result_phrase = {};
+            vm.flag_new_result_phrase = true;
+            console.log(vm.result_phrases);
+        }
+
+        function newResultPhraseUndo(){
+            vm.new_result_phrase.detail = (vm.result_phrases.length > 0)? vm.result_selected.result_phrases[0].detail : '';
+            vm.new_result_phrase.chaos = (vm.result_phrases.length > 0)? vm.result_selected.result_phrases[0].chaos : '';
+
+            vm.flag_new_result_phrase = false;
         }
 
         function selectResult(result){
 
             vm.flag_new_result = false;
-            vm.result_phrase = '';
+            vm.flag_new_result_phrase = false;
+            vm.tab_result_option = 0;
+            vm.result_phrase_detail = '';
+            vm.result_phrase_chaos = '';
+            vm.new_result_phrase = {};
 
             if(typeof(result) !== 'undefined') {
                 result.result_phrases = [];
@@ -86,10 +141,31 @@
                 vm.result_selected = JSON.parse(vm.last_results);
             }
 
+            console.log('seleccionado');
+            console.log(vm.result_selected);
+
             if(vm.result_selected.result_phrases.length > 0){
-                vm.result_phrase = vm.result_selected.result_phrases[0].detail;
+                
+                vm.result_phrases = vm.result_selected.result_phrases;
+                vm.result_phrase_detail = vm.result_selected.result_phrases[0].detail;
+                vm.new_result_phrase.detail = vm.result_selected.result_phrases[0].detail;
+                vm.new_result_phrase.chaos = vm.result_selected.result_phrases[0].chaos;
+
+                vm.flag_new_result_phrase = false;
+            }
+            else{
+                vm.result_phrases = {};
+                vm.flag_new_result_phrase = true;
             }
         }
+
+
+
+
+
+
+
+
 
 
         /////////// TODO: Refactorizar

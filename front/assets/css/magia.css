@@ -3,7 +3,7 @@
 }
 
 .textarea__medium {
-    height: 150px !important;
+    height: 100px !important;
 }
 
 .btn-list{
@@ -116,6 +116,24 @@
     display: block;
 }
 
+.new_line_sm {
+    height: 10px;
+    display: block;
+}
+
+.new_line_lg {
+    height: 30px;
+    display: block;
+}
+
 .label_center {
     line-height: 34px;
+}
+
+.title {
+    font-size: 24px;
+    text-align: center;
+    text-decoration: underline;
+    margin-top: 20px;
+    margin-bottom: 10px;
 }

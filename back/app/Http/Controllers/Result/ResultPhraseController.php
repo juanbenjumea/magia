@@ -6,9 +6,9 @@ use Illuminate\Http\Request;
 
 use Magia\Http\Requests;
 use Magia\Http\Controllers\Controller;
-use Magia\Models\Result\Result;
+use Magia\Models\Result\ResultPhrase;
 
-class ResultController extends Controller
+class ResultPhraseController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,19 +17,7 @@ class ResultController extends Controller
      */
     public function index()
     {
-        return Result::with([   'result_phrases' => function ($query) {
-                                    $query->orderBy('created_at', 'desc'); 
-                                },
-                                'result_phrases.failed' => function ($query) {
-                                    $query->orderBy('created_at', 'desc'); 
-                                },
-                                'result_phrases.deviation_origin',
-                                'result_phrases.deviation_final'
-                            ])
-                        ->where('user_id', 1)
-                        ->orderBy('created_at', 'desc')
-                        ->take(10)
-                        ->get();
+        //
     }
 
     /**
@@ -39,7 +27,7 @@ class ResultController extends Controller
      */
     public function create()
     {
-        
+        //
     }
 
     /**
@@ -50,10 +38,15 @@ class ResultController extends Controller
      */
     public function store(Request $request)
     {
-        $name = $request->input('name');
-        return Result::create(array(
-            'user_id' => 1,
-            'name' => $name
+        // TODO: Verificar si el resutl pertenece al usuario logeado
+        
+        $result_id = $request->input('result_id');
+        $detail = $request->input('detail');
+        $chaos = $request->input('chaos');
+        return ResultPhrase::create(array(
+            'result_id' => $result_id,
+            'detail' => $detail,
+            'chaos' => $chaos
         ));
     }
 
@@ -88,7 +81,11 @@ class ResultController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $result_phrase = ResultPhrase::find($id);
+        $result_phrase->detail = $request->input('detail');
+        $result_phrase->chaos = $request->input('chaos');
+        $result_phrase->save();
+        return $result_phrase;
     }
 
     /**

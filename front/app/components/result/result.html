@@ -33,7 +33,7 @@
                 <div class="form-group">
                     <label for="new_result_name">
                         Agregar un nuevo resultado
-                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true" 
+                        <span class="glyphicon glyphicon-exclamation-sign cursor" aria-hidden="true" 
                               ng-click="vm.help_new_result = !vm.help_new_result"
                               ></span>
                     </label>
@@ -54,10 +54,17 @@
     <div ng-show="!vm.flag_new_result">
         <div class="row">
             <div class="col-md-12 text-center">
-                <h3>{{ vm.result_selected.name }}</h3>
-                <p>
-                    {{ vm.result_phrase }}
-                </p>
+            </div>
+            <div class="col-md-12 text-center">
+                <h3>
+                    {{ vm.result_selected.name }}
+                    <button type="button" class="btn btn-default btn-xs" title="Editar">
+                        <span class="glyphicon glyphicon-pencil"></span>
+                    </button>
+                </h3>
+            </div>
+            <div class="col-md-12 text-center">
+                <p>{{ vm.new_result_phrase.detail }}</p>
             </div>
         </div>
     </div>
@@ -127,46 +134,154 @@
             </button>
         </div>
     </div>
+
+    <div class="new_line_sm"></div>
+
     <div class="row" ng-show="vm.tab_result_option == 1">
-        <div class="col-md-5 col-md-offset-1 text-center">
-            <div class="form-group">
-                <label>Frase resultado</label>
-                <textarea class="form-control textarea__medium" ng-model="vm.result_phrase"></textarea>
-            </div>
-            <div class="text-right">
-                <button class="btn btn-default btn-sm" title="Deshacer cambios">
-                    <span class="glyphicon glyphicon-erase"></span>
-                </button>
-                <button class="btn btn-default btn-sm" title="Editar frase actual">
-                    <span class="glyphicon glyphicon-pencil"></span>
-                </button>
-                <button class="btn btn-success btn-sm" title="Guardar nueva frase resultado">
-                    <span class="glyphicon glyphicon-floppy-save"></span>
-                </button>
-                
-            </div>
+        <div class="col-md-12">
+            <form name="new_result_phrase" ng-submit="vm.createResultPhrase()">
+                <div class="col-md-5 col-md-offset-1 text-center">
+                    <div class="form-group">
+                        <label>Frase resultado</label>
+                        <textarea class="form-control textarea__medium" name="detail"
+                                  ng-model="vm.new_result_phrase.detail"
+                                  ng-required="!vm.new_result_phrase.chaos">
+                        </textarea>
+                        <span class="text-danger" ng-show="new_result_phrase.detail.$invalid && new_result_phrase.detail.$touched">
+                            Debes ingresar la frase resultado o el caos de la idea
+                        </span>
+                    </div>
+                </div>
+                <div class="col-md-5 text-center">
+                    <div class="form-group">
+                        <label>Caos de la idea</label>
+                        <textarea class="form-control textarea__medium" name="chaos"
+                                  ng-model="vm.new_result_phrase.chaos"
+                                  ng-required="!vm.new_result_phrase.detail">
+                        </textarea>
+                        <span class="text-danger" ng-show="new_result_phrase.chaos.$invalid && new_result_phrase.chaos.$touched">
+                            Debes ingresar la frase resultado o el caos de la idea
+                        </span>
+                    </div>
+                </div>
+                <div class="col-md-6 col-md-offset-3 text-center">
+                    <button type="button" class="btn btn-default btn-sm" 
+                            ng-show="vm.result_phrases.length > 0 && vm.flag_new_result_phrase"
+                            ng-click="vm.newResultPhraseUndo()">
+                        <span class="glyphicon glyphicon-erase"></span> Deshacer
+                    </button>
+                    <button type="button" class="btn btn-default btn-sm"
+                            ng-show="vm.result_phrases.length > 0 && !vm.flag_new_result_phrase"
+                            ng-click="vm.newResultPhraseIni()">
+                        <span class="glyphicon glyphicon-plus"></span> Nueva
+                    </button>
+                    <button type="button" class="btn btn-primary btn-sm"
+                            ng-click="vm.updateResultPhrase()"
+                            ng-show="!vm.flag_new_result_phrase"
+                            ng-disabled="new_result_phrase.$invalid || vm.btn_waiting_save_result_phrase">
+                        <span class="glyphicon glyphicon-pencil"></span> Editar
+                    </button>
+                    <button type="submit" class="btn btn-success btn-sm"
+                            ng-show="vm.flag_new_result_phrase"
+                            ng-disabled="new_result_phrase.$invalid || vm.btn_waiting_save_result_phrase">
+                        <span class="glyphicon glyphicon-floppy-save"></span> Guardar
+                    </button>
+                    <button type="button" class="btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-list"></span> Ver todos
+                    </button>
+                </div>
+            </form>
         </div>
-        <div class="col-md-5 text-center">
-            <div class="form-group">
-                <label>Caos</label>
-                <textarea class="form-control textarea__medium"></textarea>
-            </div>
+        <div class="col-md-12">
+            <div class="new_line"></div>
+            <div class="title">Histórico</div>
+            <table class="table table-striped">
+                <tr>
+                    <th>Fecha</th>
+                    <th>Frase resultado</th>
+                    <th>Caos de la idea</th>
+                    <th></th>
+                </tr>
+                <tr ng-repeat="phrase in vm.result_phrases">
+                    <td>{{ phrase.created_at }}</td>
+                    <td>{{ phrase.detail }}</td>
+                    <td>{{ phrase.chaos }}</td>
+                    <td>
+                        <button class="btn btn-default btn-xs btn-detail" title="Editar">
+                            <span class="glyphicon glyphicon-pencil"></span>
+                        </button>
+                        <button class="btn btn-danger btn-xs btn-delete" title="Eliminar">
+                            <span class="glyphicon glyphicon-trash"></span>
+                        </button>
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
+
     <div class="row" ng-show="vm.tab_result_option == 2">
-        <div class="col-md-8 col-md-offset-2 text-center">
-            <div class="form-group">
-                <label>Desvío</label>
-                <textarea class="form-control"></textarea>
-            </div>
+        <div class="col-md-12 text-center">
+            <form>
+                <div class="col-md-4 col-md-offset-1 text-center">
+                    <div class="form-group">
+                        <label>
+                            <label>
+                                <span class="glyphicon glyphicon-arrow-right"></span> 
+                            </label>
+                        </label>
+                        <textarea class="form-control textarea__medium" name="detail" disabled></textarea>
+                    </div>
+                </div>
+                <div class="col-md-6 text-center">
+                    <div class="form-group">
+                        <label>Desvío</label>
+                        <textarea class="form-control textarea__medium" name="chaos"
+                                  ng-required="">
+                        </textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success btn-sm">
+                        <span class="glyphicon glyphicon-floppy-save"></span> Guardar
+                    </button>
+                </div>
+
+            </form>
         </div>
     </div>
+
     <div class="row" ng-show="vm.tab_result_option == 3">
         <div class="col-md-8 col-md-offset-2 text-center">
-            <div class="form-group">
-                <label>Fallido</label>
-                <textarea class="form-control"></textarea>
-            </div>
+            <form>
+                <div class="form-group">
+                    <label>Fallido</label>
+                    <textarea class="form-control"></textarea>
+                </div>
+                <button type="submit" class="btn btn-success btn-sm">
+                    <span class="glyphicon glyphicon-floppy-save"></span> Guardar
+                </button>
+            </form>
+        </div>
+        <div class="col-md-8 col-md-offset-2">
+            <div class="new_line"></div>
+            <div class="title">Histórico</div>
+            <table class="table table-striped">
+                <tr>
+                    <th>Fecha</th>
+                    <th>Desvío</th>
+                    <th></th>
+                </tr>
+                <tr ng-repeat="fail in vm.result_phrases[0].failed">
+                    <td>{{ fail.created_at }}</td>
+                    <td>{{ fail.detail }}</td>
+                    <td>
+                        <button class="btn btn-default btn-xs btn-detail" title="Editar">
+                            <span class="glyphicon glyphicon-pencil"></span>
+                        </button>
+                        <button class="btn btn-danger btn-xs btn-delete" title="Eliminar">
+                            <span class="glyphicon glyphicon-trash"></span>
+                        </button>
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
 </div>
