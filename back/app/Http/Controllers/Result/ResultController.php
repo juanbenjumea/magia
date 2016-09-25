@@ -17,6 +17,7 @@ class ResultController extends Controller
      */
     public function index()
     {
+        // TODO_MAGIA: Filtrar los resultados por usuario
         return Result::with([   'result_phrases' => function ($query) {
                                     $query->orderBy('created_at', 'desc'); 
                                 },
@@ -77,7 +78,12 @@ class ResultController extends Controller
      */
     public function show($id)
     {
-        //
+        // TODO_MAGIA: Verificar que el resultados pretencezca al usuario
+        return Result::with(['result_phrases' => function ($query) {
+                                    $query->orderBy('created_at', 'desc'); 
+                                }
+                            ])
+                        ->find($id);
     }
 
     /**
@@ -102,7 +108,16 @@ class ResultController extends Controller
     {
         $result = Result::find($id);
         if($request->has('name')){
-            $result->name = $request->input('name');
+            $name = $request->input('name');
+            $duplicate = self::checkDuplicate($name, $id);
+            if($duplicate->count() === 0){
+                $result->name = $name;
+            }
+            else {
+                return response()->json([
+                    'message' => 'Nombre de resultado duplicado'
+                ], 500);
+            }
         }
         if($request->has('completed')){
             $result->completed = $request->input('completed');
@@ -123,10 +138,10 @@ class ResultController extends Controller
     }
     
     
-    public static function checkDuplicate($name, $result_id = null) {
+    public static function checkDuplicate($name, $id = null) {
         $result = Result::where('name', 'like', $name);
-        if($result_id){
-            $result->where('id', '=', $result_id);
+        if($id){
+            $result->where('id', '!=', $id);
         }
         $result->get();
         return $result;

@@ -2,9 +2,7 @@
     'use strict';
 
     angular
-        .module('app', [
+        .module('app.situation', [
             'app.core'
-            , 'app.result'
-            , 'app.situation'
         ]);
 })();

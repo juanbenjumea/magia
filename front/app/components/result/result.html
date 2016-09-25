@@ -111,7 +111,8 @@
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
                         <li>
-                            <a href="#" id="btn-peirce" ng-click="index.selectMethod('peirce')">
+                            <a href="" id="btn-peirce"
+                                   ng-click="vm.goToPierce()">
                                 <span class="glyphicon glyphicon-certificate"></span> Peirce
                             </a>
                         </li>
@@ -137,7 +138,7 @@
                         </li>
                         <li>
                             <a ng-click="index.selectMethod('')">
-                                <span class="glyphicon glyphicon-refresh"></span> WU-WEI
+                                <span class="glyphicon glyphicon-refresh"></span> Wu wei
                             </a>
                         </li>
                         <li>
@@ -224,9 +225,6 @@
                     <td>{{ phrase.detail }}</td>
                     <td>{{ phrase.chaos }}</td>
                     <td>
-                        <button class="btn btn-default btn-xs btn-detail" title="Editar">
-                            <span class="glyphicon glyphicon-pencil"></span>
-                        </button>
                         <button class="btn btn-danger btn-xs btn-delete" title="Eliminar">
                             <span class="glyphicon glyphicon-trash"></span>
                         </button>

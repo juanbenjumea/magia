@@ -4,17 +4,18 @@
 
     angular
         .module('app.result')
-        .controller("Result", Result);
+        .controller('Result', Result);
 
-    Result.$inject = ['$uibModal', '$log', 'resultService'];
+    Result.$inject = ['$uibModal', '$log', '$location', 'resultService'];
 
-    function Result($uibModal, $log, resultService){
+    function Result($uibModal, $log, $location, resultService){
         var vm = this;
 
         // Bind variables
         vm.completeResult = completeResult;
         vm.createResult = createResult;
         vm.createResultPhrase = createResultPhrase;
+        vm.goToPierce = goToPierce;
         vm.modalOpenAddResult = modalOpenAddResult;
         vm.newResultPhraseIni = newResultPhraseIni;
         vm.newResultPhraseUndo = newResultPhraseUndo;
@@ -92,28 +93,32 @@
                     .then(updateResultComplete)
                     .catch(updateResultError);
 
-            function updateResultComplete(){
+            function updateResultComplete(data , status, headers, config){
                 vm.result_selected.name = vm.edit_result.name;
                 vm.edit_result = {};
                 vm.btn_waiting_update_result = false;
             }
 
-            function updateResultError(){
-                
+            function updateResultError(error){
+                if(error.data.message){
+                    alert(error.data.message);
+                    vm.edit_result = {};
+                    vm.btn_waiting_save_result = false;
+                }
             }
         }
 
         function completeResult(){
-            console.log('entra');
+
             return resultService.completeResult(vm.result_selected.id).$promise
                     .then(completeResultComplete)
                     .catch(completeResultError);
 
-            function completeResultComplete(){
+            function completeResultComplete(data , status, headers, config){
                 console.log('completado')
             }
 
-            function completeResultError(){
+            function completeResultError(error){
                 
             }
         }
@@ -133,11 +138,14 @@
                 data.deviation = vm.deviation;
                 data.failed = vm.failed;
                 vm.result_phrases.unshift(data);
-                vm.new_result_phrase = {};
             }
 
             function createResultPhraseError(error){
-                console.log(error);
+                if(error.data.message){
+                    alert(error.data.message);
+                    vm.edit_result = {};
+                    vm.btn_waiting_save_result = false;
+                }
             }
         }
 
@@ -216,6 +224,9 @@
 
         function selectResult(result){
 
+            // TODO_MAGIA: Consultar toda la información asociada al result, 
+            // pues cuandos se crea no se está está asociando al array que hay en el value
+
             vm.flag_new_result = false;
             vm.flag_new_result_phrase = false;
             vm.tab_result_option = 0;
@@ -232,7 +243,7 @@
             }
 
             if(vm.result_selected.result_phrases.length > 0){
-                console.log(vm.result_selected.result_phrases);
+
                 vm.result_phrases = vm.result_selected.result_phrases;
                 vm.result_phrase_detail = vm.result_selected.result_phrases[0].detail;
                 vm.new_result_phrase.detail = vm.result_selected.result_phrases[0].detail;
@@ -250,6 +261,9 @@
             }
         }
 
+        function goToPierce(){
+            $location.path('/situation/peirce/'+vm.result_selected.id);
+        }
 
 
 
@@ -259,7 +273,7 @@
 
 
 
-        /////////// TODO: Refactorizar
+        // TODO_MAGIA: Refactorizar
         function modalOpenAddResult(size) {
             var modalInstance = $uibModal.open({
                 animation: true,
