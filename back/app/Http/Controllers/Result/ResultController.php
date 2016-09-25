@@ -51,10 +51,22 @@ class ResultController extends Controller
     public function store(Request $request)
     {
         $name = $request->input('name');
-        return Result::create(array(
-            'user_id' => 1,
-            'name' => $name
-        ));
+        
+        $duplicate = self::checkDuplicate($name);
+        
+        if($duplicate->count() === 0){
+            return Result::create(array(
+                'user_id' => 1,
+                'name' => $name
+            ));
+        }
+        else {
+            return response()->json([
+                'message' => 'Nombre de resultado duplicado'
+            ], 500);
+            
+        }
+        
     }
 
     /**
@@ -88,7 +100,15 @@ class ResultController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $result = Result::find($id);
+        if($request->has('name')){
+            $result->name = $request->input('name');
+        }
+        if($request->has('completed')){
+            $result->completed = $request->input('completed');
+        }
+        $result->save();
+        return $result;
     }
 
     /**
@@ -100,5 +120,15 @@ class ResultController extends Controller
     public function destroy($id)
     {
         //
+    }
+    
+    
+    public static function checkDuplicate($name, $result_id = null) {
+        $result = Result::where('name', 'like', $name);
+        if($result_id){
+            $result->where('id', '=', $result_id);
+        }
+        $result->get();
+        return $result;
     }
 }
