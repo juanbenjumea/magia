@@ -6,5 +6,8 @@
             'app.core'
             , 'app.result'
             , 'app.situation'
+            , 'app.peirce'
+            , 'app.report'
+            , 'app.fwf'
         ]);
 })();

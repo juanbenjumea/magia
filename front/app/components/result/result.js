@@ -18,9 +18,8 @@
         vm.goToPierce = goToPierce;
         vm.modalOpenAddResult = modalOpenAddResult;
         vm.newResultPhraseIni = newResultPhraseIni;
-        vm.newResultPhraseUndo = newResultPhraseUndo;
-        vm.saveDeviation = saveDeviation;
-        vm.saveFailed = saveFailed;
+        vm.createFailed = createFailed;
+        vm.createDeviation = createDeviation;
         vm.selectResult = selectResult;
         vm.toggleFlagNewResult = toggleFlagNewResult;
         vm.toggleTabResultOption = toggleTabResultOption;
@@ -31,7 +30,6 @@
         vm.new_result = {};
         vm.new_result_phrase = {};
         vm.result_phrases = {};
-        vm.help_new_result = false;
         vm.flag_new_result = true;
         vm.flag_edit_result = false;
         
@@ -66,16 +64,17 @@
 
         function createResult(){
             vm.btn_waiting_save_result = true;
+
             return resultService.createResult(vm.new_result).$promise
                     .then(createResultComplete)
                     .catch(createResultError);
                     
             function createResultComplete(data , status, headers, config){
+
                 vm.new_result = {};
                 vm.results.unshift(data);
-                selectResult(data);
+                selectResult(data.id);
                 vm.btn_waiting_save_result = false;
-                vm.flag_new_result_phrase = true;
             }
 
             function createResultError(error){
@@ -115,7 +114,7 @@
                     .catch(completeResultError);
 
             function completeResultComplete(data , status, headers, config){
-                console.log('completado')
+                console.log('completado');
             }
 
             function completeResultError(error){
@@ -130,14 +129,9 @@
                     .then(createResultPhraseComplete)
                     .catch(createResultPhraseError);
 
-            function createResultPhraseComplete(data , status, headers, config){
-                vm.flag_new_result_phrase = false;
+            function createResultPhraseComplete(data, status, headers, config){
                 vm.btn_waiting_save_result_phrase = false;
-                vm.deviation_origin = {};
-                vm.failed = [];
-                data.deviation = vm.deviation;
-                data.failed = vm.failed;
-                vm.result_phrases.unshift(data);
+                selectResult(vm.result_selected.id);
             }
 
             function createResultPhraseError(error){
@@ -149,39 +143,17 @@
             }
         }
 
-        function saveDeviation(){
-            vm.btn_waiting_save_deviation = true;
-            vm.deviation_origin.result_phrase_origin_id = vm.result_phrases[0].id;
-            if(vm.deviation_origin.id){
-                return resultService.updateDeviation(vm.deviation_origin, vm.deviation_origin.id).$promise
-                    .then(createDeviationComplete)
-                    .catch(createDeviationError);
-            }
-            else {
-                return resultService.createDeviation(vm.deviation_origin).$promise
-                        .then(createDeviationComplete)
-                        .catch(createDeviationError);
-            }
-            function createDeviationComplete(data , status, headers, config){
-                vm.deviation_origin = data;
-                vm.btn_waiting_save_deviation = false;
-            }
-
-            function createDeviationError(error){
-                console.log(error);
-            }
-        }
-
-        function saveFailed(){
+        function createFailed(){
             vm.btn_waiting_save_failed = true;
-            vm.failed.result_phrase_id = vm.result_phrases[0].id;
-            return resultService.createFailed(vm.failed).$promise
+            vm.new_failed.result_phrase_id = vm.result_phrases[0].id;
+
+            return resultService.createFailed(vm.new_failed).$promise
                     .then(createFailedComplete)
                     .catch(createFailedError);
 
             function createFailedComplete(data , status, headers, config){
                 vm.result_phrases[0].failed.unshift(data);
-                vm.failed = {};
+                vm.new_failed = {};
                 vm.btn_waiting_save_failed = false;
             }
 
@@ -192,7 +164,7 @@
 
         function updateResultPhrase(){
             vm.btn_waiting_update_result_phrase = true;
-            return resultService.updateResultPhrase(vm.new_result_phrase, vm.result_phrases[0].id).$promise
+            return resultService.updateResultPhrase(vm.update_result_phrase, vm.result_phrases[0].id).$promise
                     .then(updateResultPhraseComplete)
                     .catch(updateResultPhraseError);
 
@@ -209,55 +181,74 @@
             }
         }
 
+        function createDeviation(){
+            vm.btn_waiting_save_deviation = true;
+            var deviation = {'deviation': vm.new_result_phrase.deviation};
+            resultService.updateDeviation(deviation, vm.result_phrases[0].id).$promise
+                    .then(updateDeviationComplete)
+                    .catch(updateDeviationError);
+            
+            function updateDeviationComplete(){
+                vm.btn_waiting_save_deviation = false;
+            }
+
+            function updateDeviationError(){
+                vm.btn_waiting_save_deviation = false;
+            }
+
+            // Guardar nueva frase resultado
+            if(typeof(vm.new_result_phrase.chaos) !== 'undefined' || typeof(vm.new_result_phrase.detail) !== 'undefined'){
+                createResultPhrase();
+            }
+        }
+
         function newResultPhraseIni(){
             vm.new_result_phrase = {};
-            vm.flag_new_result_phrase = true;
-            console.log(vm.result_phrases);
         }
 
-        function newResultPhraseUndo(){
-            vm.new_result_phrase.detail = (vm.result_phrases.length > 0)? vm.result_selected.result_phrases[0].detail : '';
-            vm.new_result_phrase.chaos = (vm.result_phrases.length > 0)? vm.result_selected.result_phrases[0].chaos : '';
-
-            vm.flag_new_result_phrase = false;
-        }
-
-        function selectResult(result){
+        function selectResult(result_id){
 
             // TODO_MAGIA: Consultar toda la información asociada al result, 
-            // pues cuandos se crea no se está está asociando al array que hay en el value
+            // pues cuando se crea información no se está está asociando al array que hay en el value
 
             vm.flag_new_result = false;
-            vm.flag_new_result_phrase = false;
             vm.tab_result_option = 0;
             vm.result_phrase_detail = '';
             vm.result_phrase_chaos = '';
+            vm.update_result_phrase = {};
             vm.new_result_phrase = {};
 
-            if(typeof(result) !== 'undefined') {
-                result.result_phrases = [];
-                vm.result_selected = result;
+            if(typeof(result_id) !== 'undefined') {
+                return resultService.getResult(result_id).$promise
+                    .then(getResultComplete)
+                    .catch(getResultError);
             }
             else {
-                vm.result_selected = JSON.parse(vm.last_results);
+                return resultService.getResult(vm.last_results).$promise
+                    .then(getResultComplete)
+                    .catch(getResultError);
+            }
+            
+            function getResultComplete(data, status, headers, config){
+                vm.result_selected = data;
+
+                if(vm.result_selected.result_phrases.length > 0){
+
+                    vm.result_phrases = vm.result_selected.result_phrases;
+                    vm.result_phrase_detail = vm.result_selected.result_phrases[0].detail;
+                    vm.update_result_phrase.detail = vm.result_selected.result_phrases[0].detail;
+                    vm.update_result_phrase.chaos = vm.result_selected.result_phrases[0].chaos;
+                    vm.new_result_phrase.deviation = vm.result_selected.result_phrases[0].deviation;
+                    vm.failed = vm.result_selected.result_phrases[0].failed;
+                }
+                else{
+                    vm.result_phrases = [];
+                    vm.failed = [];
+                }
             }
 
-            if(vm.result_selected.result_phrases.length > 0){
-
-                vm.result_phrases = vm.result_selected.result_phrases;
-                vm.result_phrase_detail = vm.result_selected.result_phrases[0].detail;
-                vm.new_result_phrase.detail = vm.result_selected.result_phrases[0].detail;
-                vm.new_result_phrase.chaos = vm.result_selected.result_phrases[0].chaos;
-                vm.deviation_origin = vm.result_selected.result_phrases[0].deviation_origin;
-                vm.deviation_final = vm.result_selected.result_phrases[0].deviation_final;
-                vm.filed = vm.result_selected.result_phrases[0].filed;
-
-                vm.flag_new_result_phrase = false;
-            }
-            else{
-                vm.result_phrases = [];
-                vm.flag_new_result_phrase = true;
-                vm.filed = [];
+            function getResultError(error){
+                console.log(error);
             }
         }
 

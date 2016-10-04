@@ -1,14 +1,14 @@
 <?php
 
-namespace Magia\Http\Controllers\Result;
+namespace Magia\Http\Controllers\Core;
 
 use Illuminate\Http\Request;
 
 use Magia\Http\Requests;
 use Magia\Http\Controllers\Controller;
-use Magia\Models\Result\Deviation;
+use Magia\Models\Core\FromWhereFailure;
 
-class DeviationController extends Controller
+class FromWhereFailureController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,7 +17,7 @@ class DeviationController extends Controller
      */
     public function index()
     {
-        //
+        return FromWhereFailure::get();
     }
 
     /**
@@ -38,14 +38,7 @@ class DeviationController extends Controller
      */
     public function store(Request $request)
     {
-        $result_phrase_origin_id = $request->input('result_phrase_origin_id');
-        $detail = $request->input('detail');
-        $deviation = Deviation::create(array(
-            'result_phrase_origin_id' => $result_phrase_origin_id,
-            'detail' => $detail
-        ));
-
-        return $deviation;
+        //
     }
 
     /**
@@ -79,10 +72,7 @@ class DeviationController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $deviation = Deviation::find($id);
-        $deviation->detail = $request->input('detail');
-        $deviation->save();
-        return $deviation;
+        //
     }
 
     /**

@@ -23,4 +23,8 @@ class Situation extends Model {
     public function methods() {
         return $this->belongsToMany('\Magia\Models\Core\Method', 'st_in_method', 'situation_id', 'method_id')->withPivot('original');
     }
+    
+    public function analysis(){
+        return $this->hasMany('\Magia\Models\Peirce\Analysis');
+    }
 }

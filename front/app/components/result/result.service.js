@@ -65,9 +65,9 @@
             return Deviation.save(deviation);
         }
 
-        function updateDeviation(deviation, id){
-            var Deviation = $resource(API_URL + 'deviation/:id', {id : '@id'}, {'update': { method:'PUT' }});
-            return Deviation.update({'id' : id}, deviation);
+        function updateDeviation(result_phrase, id){
+            var ResultPhrase = $resource(API_URL + 'result-phrase/:id', {id : '@id'}, {'update': { method:'PUT' }});
+            return ResultPhrase.update({'id' : id}, result_phrase);
         }
         
         function createFailed(failed) {

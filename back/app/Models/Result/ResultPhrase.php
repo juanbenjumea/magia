@@ -16,14 +16,6 @@ class ResultPhrase extends Model {
         return $this->belongsTo('\Magia\Models\Result\Result', 'result_id', 'id');
     }
 
-    public function deviation_origin() {
-        return $this->hasOne('\Magia\Models\Result\Deviation', 'result_phrase_origin_id', 'id');
-    }
-
-    public function deviation_final() {
-        return $this->hasOne('\Magia\Models\Result\Deviation', 'result_phrase_final_id', 'id');
-    }
-
     public function failed() {
         return $this->hasMany('\Magia\Models\Result\Failed', 'result_phrase_id', 'id');
     }

@@ -2,8 +2,20 @@
     display:none !important
 }
 
+.padding_right {
+    padding-right: 5px;
+}
+
+.padding_left {
+    padding-left: 5px;
+}
+
 .textarea__medium {
     height: 100px !important;
+}
+
+.textarea__large {
+    height: 200px !important;
 }
 
 .btn-list{

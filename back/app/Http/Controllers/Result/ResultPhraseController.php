@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Magia\Http\Requests;
 use Magia\Http\Controllers\Controller;
 use Magia\Models\Result\ResultPhrase;
-use Magia\Models\Result\Deviation;
 
 class ResultPhraseController extends Controller
 {
@@ -37,25 +36,30 @@ class ResultPhraseController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public static function store(Request $request, $result_id = null)
     {
         // TODO_MAGIA: Verificar si el resutl pertenece al usuario logeado
         // TODO_MAGIA: Verificar si hay un desvío asociado a la anterior frase resultado y asociarle esta nueva
-        
-        $result_id = $request->input('result_id');
-        $detail = $request->input('detail');
-        $duplicate = self::checkDuplicate($detail, $result_id);
-        
-        if($duplicate->count() === 0){
-            $chaos = $request->input('chaos');
-            $result_phrase = ResultPhrase::create(array(
-                'result_id' => $result_id,
-                'detail' => $detail,
-                'chaos' => $chaos
-            ));
 
-            self::attachDeviationFinal($result_id, $result_phrase->id);
+        $data = array();
+        
+        if($result_id === null){
+            $result_id = $request->input('result_id');
+        }
+        $data['result_id'] = $result_id;
+        
+        $no_detail = 1;
+        if($request->has('detail')){
+            $data['detail'] = $request->input('detail');
+            $duplicate = self::checkDuplicate($data['detail'], $result_id);
+            $no_detail = 0;
+        }
 
+        if($no_detail === 1 || $duplicate->count() === 0){
+            if($request->has('chaos')){
+                $data['chaos'] = $request->input('chaos');
+            }
+            $result_phrase = ResultPhrase::create($data);
             return $result_phrase;
         }
         else {
@@ -98,8 +102,15 @@ class ResultPhraseController extends Controller
     public function update(Request $request, $id)
     {
         $result_phrase = ResultPhrase::find($id);
-        $result_phrase->detail = $request->input('detail');
-        $result_phrase->chaos = $request->input('chaos');
+        if($request->has('detail')){
+            $result_phrase->detail = $request->input('detail');
+        }
+        if($request->has('chaos')){
+            $result_phrase->chaos = $request->input('chaos');
+        }
+        if($request->has('deviation')){
+            $result_phrase->deviation = $request->input('deviation');
+        }
         $result_phrase->save();
         return $result_phrase;
     }
@@ -122,30 +133,5 @@ class ResultPhraseController extends Controller
         }
         $result->get();
         return $result;
-    }
-    
-    public static function attachDeviationFinal($result_id, $result_phrase_id){
-        
-        // asociar como result_phrase_final_id al rs_deviation 
-        // donde la result_phrase_id anterior sea el result_phrase_origin_id
-        
-        // Buscar la frase anterior
-        // Buscar el desvío
-        // Actualizar
-        
-        $previous = ResultPhrase::with('deviation_origin')
-                    ->where('result_id', '=', $result_id)
-                    ->where('id', '<', $result_phrase_id)
-                    ->orderBy('created_at', 'desc')
-                    ->first();
-
-        if($previous->deviation_origin){
-            $deviation_id = $previous->deviation_origin->id;
-
-            $deviation = Deviation::find($deviation_id);
-            $deviation->result_phrase_final_id = $result_phrase_id;
-            $deviation->save();
-        }
-        
     }
 }

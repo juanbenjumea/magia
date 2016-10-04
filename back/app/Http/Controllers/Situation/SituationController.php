@@ -19,6 +19,7 @@ class SituationController extends Controller
     {
         return Situation::with(['solution', 'methods'])
                         ->where('result_id', $request->input('result_id'))
+                        ->orderBy('created_at', 'desc')
                         ->get();
     }
 
@@ -29,7 +30,7 @@ class SituationController extends Controller
      */
     public function create()
     {
-        //
+
     }
 
     /**
@@ -40,7 +41,27 @@ class SituationController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = array();
+        $data['result_id'] = $request->input('result_id');
+        $data['name'] = $request->input('name');
+
+        $duplicate = self::checkDuplicate($data['name'], $data['result_id']);
+        
+        if($request->has('detail')){
+            $data['detail'] = $request->input('detail');
+        }
+        if($duplicate->count() === 0){
+            $situation = Situation::create($data);
+            $methods = $situation->methods()->attach($request->input('method_id'), ['original' => 1]);
+            $situation->methods = $methods;
+        }
+        else {
+            return response()->json([
+                    'message' => 'Nombre de sitaución duplicado'
+                ], 500);
+        }
+
+        return $situation;
     }
 
     /**
@@ -51,7 +72,12 @@ class SituationController extends Controller
      */
     public function show($id)
     {
-        //
+        // TODO_MAGIA: Verificar que la sitaución pretencezca al usuario
+        return Situation::with(['analysis' => function ($query) {
+                                    $query->orderBy('created_at', 'desc'); 
+                                }
+                            ])
+                        ->find($id);
     }
 
     /**
@@ -86,5 +112,14 @@ class SituationController extends Controller
     public function destroy($id)
     {
         //
+    }
+    
+    public static function checkDuplicate($name, $result_id = null) {
+        $situation = Situation::where('name', 'like', $name);
+        if($result_id){
+            $situation->where('result_id', '=', $result_id);
+        }
+        $situation->get();
+        return $situation;
     }
 }

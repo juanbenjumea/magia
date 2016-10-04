@@ -2,10 +2,15 @@
     <div class="col-md-2 col-md-offset-6 text-right">
         <label class="label_center">Resultados recientes: </label>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-4" ng-show="vm.results">
         <select class="form-control" ng-model="vm.last_results" ng-change="vm.selectResult()">
-            <option ng-repeat="result in vm.results" value="{{ result }}">{{ result.name }}</option>
+            <option ng-repeat="result in vm.results" value="{{ result.id }}">{{ result.name }}</option>
         </select>
+    </div>
+    <div class="col-md-4" ng-show="!vm.results">
+        <p class="text-info">
+            <label class="label_center">Cargando...</label>
+        </p>
     </div>
     <div class="col-md-12 text-right">
         <button id="btn-add" class="btn btn-default">
@@ -20,34 +25,45 @@
 <div class="row row__highlight">
     <div class="row" ng-show="vm.flag_new_result">
         <div class="col-md-8 col-md-offset-2 text-center">
-            <div class="alert alert-warning" role="alert" ng-show="vm.help_new_result">
-                Recuerde considerar que el resultado debe ser: 
-                <br>
-                <br>* Conmensurable (Que se pueda Medir)
-                <br>* Imposible (no logrado por los medios que usualmente dispone)
-                <br>* Denso (Tangible)
-                <br>* Convergente (Que integre)
-            </div>
-
             <form class="form-horizontal" name="new_result" ng-submit="vm.createResult()">
-                <div class="form-group">
-                    <label for="new_result_name">
-                        Agregar un nuevo resultado
-                        <span class="glyphicon glyphicon-exclamation-sign cursor" aria-hidden="true" 
-                              ng-click="vm.help_new_result = !vm.help_new_result"
-                              ></span>
-                    </label>
-                    <input class="form-control text-center" name="name" id="new_result_name" type="text" placeholder="Nombre del resultado" 
-                           ng-model="vm.new_result.name"
-                           ng-required="true">
-                    <span class="text-danger" ng-show="new_result.name.$invalid && new_result.name.$touched">
-                        El nombre es un campo obligatorio
-                    </span>
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="new_result_name">Título</label>
+                        <input class="form-control text-center" name="name" id="new_result_name" type="text" 
+                               placeholder="Título con el que identificará la frase resultado" 
+                               ng-model="vm.new_result.name"
+                               ng-required="true">
+                        <span class="text-danger" ng-show="new_result.name.$invalid && new_result.name.$touched">
+                            El Título es un campo obligatorio
+                        </span>
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-success" 
-                        ng-disabled="new_result.$invalid || vm.btn_waiting_save_result">
-                    <span class="glyphicon glyphicon-floppy-disk"></span> Guardar
-                </button>
+                <div class="col-md-6">
+                    <div class="form-group padding_right">
+                        <label for="new_result_chaos">
+                            Caos de la idea
+                        </label>
+                        <textarea class="form-control textarea__large" name="chaos" id="new_result_chaos"
+                                ng-model="vm.new_result.chaos"
+                                placeholder="Agregue el caos de la idea. Aquellas cosas que hacen o refieren a su resultado para luego escucharse y plantear una frase resultado"></textarea>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group padding_left">
+                        <label for="new_result_detail">
+                            Frase resultado
+                        </label>
+                        <textarea class="form-control textarea__large" name="detail" id="new_result_detail"
+                                ng-model="vm.new_result.detail"
+                                placeholder="Recuerde considerar que el resultado debe ser: Conmensurable (Que se pueda Medir), Imposible (no logrado por los medios que usualmente dispone), Denso (Tangible)  Convergente (Que integre)"></textarea>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-success" 
+                            ng-disabled="new_result.$invalid || vm.btn_waiting_save_result">
+                        <span class="glyphicon glyphicon-floppy-disk"></span> Guardar
+                    </button>
+                </div>
             </form>
         </div>
     </div>
@@ -60,27 +76,26 @@
                         <div class="form-group">
                             <input type="text" class="form-control" ng-model="vm.edit_result.name">
                         </div>
-                        <button type="submit" class="btn btn-success btn-xs" title="Guardar"
-                                ng-click="vm.flag_edit_result = false">
-                            <span class="glyphicon glyphicon-floppy-disk"></span>
-                        </button>
                         <button type="button" class="btn btn-default btn-xs" title="Deshacer"
                                 ng-click="vm.flag_edit_result = false">
                             <span class="glyphicon glyphicon-erase"></span>
                         </button>
+                        <button type="submit" class="btn btn-success btn-xs" title="Guardar"
+                                ng-click="vm.flag_edit_result = false">
+                            <span class="glyphicon glyphicon-floppy-disk"></span>
+                        </button>
                     </form>
                 </div>
-                <h3 ng-show="!vm.flag_edit_result">
+                <h5 ng-show="!vm.flag_edit_result">
                     {{ vm.result_selected.name }}
                     <button type="button" class="btn btn-default btn-xs" title="Editar"
                                 ng-click="vm.flag_edit_result = true">
                         <span class="glyphicon glyphicon-pencil"></span>
                     </button>
-                </h3>
+                </h5>
             </div>
             <div class="col-md-12 text-center">
-                <div class="new_line"></div>
-                <p>{{ vm.new_result_phrase.detail }}</p>
+                <h3>{{ vm.update_result_phrase.detail }}</h3>
             </div>
         </div>
     </div>
@@ -91,7 +106,7 @@
         <div class="col-md-12 text-center">
             <div class="btn-group" role="group">
                 <button class="btn btn-default" ng-click="vm.toggleTabResultOption(1)">
-                    <span class="glyphicon glyphicon-check"></span> Frase resultado
+                    <span class="glyphicon glyphicon-check"></span> Editar
                 </button>
                 <button class="btn btn-default" ng-click="vm.toggleTabResultOption(2)"
                         ng-disabled="!vm.result_phrases.length">
@@ -160,15 +175,15 @@
 
     <div class="row" ng-show="vm.tab_result_option == 1">
         <div class="col-md-12">
-            <form name="new_result_phrase" ng-submit="vm.createResultPhrase()">
+            <form name="update_result_phrase" ng-submit="vm.updateResultPhrase()">
                 <div class="col-md-5 col-md-offset-1 text-center">
                     <div class="form-group">
                         <label>Frase resultado</label>
                         <textarea class="form-control textarea__medium" name="detail"
-                                  ng-model="vm.new_result_phrase.detail"
-                                  ng-required="!vm.new_result_phrase.chaos">
+                                  ng-model="vm.update_result_phrase.detail"
+                                  ng-required="!vm.update_result_phrase.chaos">
                         </textarea>
-                        <span class="text-danger" ng-show="new_result_phrase.detail.$invalid && new_result_phrase.detail.$touched">
+                        <span class="text-danger" ng-show="update_result_phrase.detail.$invalid && update_result_phrase.detail.$touched">
                             Debes ingresar la frase resultado o el caos de la idea
                         </span>
                     </div>
@@ -177,35 +192,19 @@
                     <div class="form-group">
                         <label>Caos de la idea</label>
                         <textarea class="form-control textarea__medium" name="chaos"
-                                  ng-model="vm.new_result_phrase.chaos"
-                                  ng-required="!vm.new_result_phrase.detail">
+                                  ng-model="vm.update_result_phrase.chaos"
+                                  ng-required="!vm.update_result_phrase.detail">
                         </textarea>
-                        <span class="text-danger" ng-show="new_result_phrase.chaos.$invalid && new_result_phrase.chaos.$touched">
+                        <span class="text-danger" ng-show="update_result_phrase.chaos.$invalid && update_result_phrase.chaos.$touched">
                             Debes ingresar la frase resultado o el caos de la idea
                         </span>
                     </div>
                 </div>
                 <div class="col-md-6 col-md-offset-3 text-center">
-                    <button type="button" class="btn btn-default btn-sm" 
-                            ng-show="vm.result_phrases.length > 0 && vm.flag_new_result_phrase"
-                            ng-click="vm.newResultPhraseUndo()">
-                        <span class="glyphicon glyphicon-erase"></span> Deshacer
-                    </button>
-                    <button type="button" class="btn btn-default btn-sm"
-                            ng-show="vm.result_phrases.length > 0 && !vm.flag_new_result_phrase"
-                            ng-click="vm.newResultPhraseIni()">
-                        <span class="glyphicon glyphicon-plus"></span> Nueva
-                    </button>
-                    <button type="button" class="btn btn-primary btn-sm"
+                    <button type="button" class="btn btn-success btn-sm"
                             ng-click="vm.updateResultPhrase()"
-                            ng-show="!vm.flag_new_result_phrase"
                             ng-disabled="new_result_phrase.$invalid || vm.btn_waiting_update_result_phrase">
-                        <span class="glyphicon glyphicon-pencil"></span> Editar
-                    </button>
-                    <button type="submit" class="btn btn-success btn-sm"
-                            ng-show="vm.flag_new_result_phrase"
-                            ng-disabled="new_result_phrase.$invalid || vm.btn_waiting_save_result_phrase">
-                        <span class="glyphicon glyphicon-floppy-save"></span> Guardar
+                        <span class="glyphicon glyphicon-floppy-disk"></span> Guardar
                     </button>
                 </div>
             </form>
@@ -236,26 +235,32 @@
 
     <div class="row" ng-show="vm.tab_result_option == 2">
         <div class="col-md-12 text-center">
-            <form name="deviation" ng-submit="vm.saveDeviation()">
-                <div class="col-md-4 col-md-offset-1 text-center">
-                    <div class="form-group">
-                        <label>
-                            <span class="glyphicon glyphicon-arrow-right"></span> 
-                        </label>
-                        <textarea class="form-control textarea__medium" disabled
-                                  ng-model="vm.deviation_final.detail"></textarea>
-                    </div>
-                </div>
-                <div class="col-md-6 text-center">
+            <form name="deviation" ng-submit="vm.createDeviation()">
+                <div class="col-md-4 text-center">
                     <div class="form-group">
                         <label>Desvío</label>
                         <textarea class="form-control textarea__medium" name="detail"
-                                  ng-model="vm.deviation_origin.detail"
-                                  ng-required="true"></textarea>
+                                  ng-model="vm.new_result_phrase.deviation"></textarea>
                         <span class="text-danger" ng-show="deviation.detail.$invalid && deviation.detail.$touched">
                             El detalle del desvío es un campo obligatorio
                         </span>
                     </div>
+                </div>
+                <div class="col-md-4 text-center">
+                    <div class="form-group">
+                        <label>Caos de la idea</label>
+                        <textarea class="form-control textarea__medium" 
+                                  ng-model="vm.new_result_phrase.chaos"></textarea>
+                    </div>
+                </div>
+                <div class="col-md-4 text-center">
+                    <div class="form-group">
+                        <label>Frase resultado</label>
+                        <textarea class="form-control textarea__medium" 
+                                  ng-model="vm.new_result_phrase.detail"></textarea>
+                    </div>
+                </div>
+                <div class="col-md-12 text-center">
                     <button type="submit" class="btn btn-success btn-sm"
                             ng-disabled="deviation.$invalid || vm.btn_waiting_save_deviation">
                         <span class="glyphicon glyphicon-floppy-save"></span> Guardar
@@ -267,11 +272,11 @@
 
     <div class="row" ng-show="vm.tab_result_option == 3">
         <div class="col-md-8 col-md-offset-2 text-center">
-            <form name="failed" ng-submit="vm.saveFailed()">
+            <form name="failed" ng-submit="vm.createFailed()">
                 <div class="form-group">
                     <label>Fallido</label>
                     <textarea class="form-control" name="detail"
-                              ng-model="vm.failed.detail"
+                              ng-model="vm.new_failed.detail"
                               ng-required="true"></textarea>
                     <span class="text-danger" ng-show="failed.detail.$invalid && failed.detail.$touched">
                         El detalle del fallido es un campo obligatorio

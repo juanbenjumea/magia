@@ -1,0 +1,49 @@
+<div class="row">
+    <div class="col-md-10 col-md-offset-1 text-right">
+        <button class="btn btn-success"
+                ng-show="!vm.flag_new_situation"
+                ng-click="vm.flag_new_situation = true">
+            <span class="glyphicon glyphicon-plus"></span> Nueva Falla en el desde donde
+        </button>
+    </div>
+    <div class="col-md-8 col-md-offset-2 text-center">
+        <form class="form-horizontal" name="situation"
+                ng-show="vm.flag_new_situation">
+            <div class="new_line"></div>
+            <div class="form-group">
+                <label>Nombre</label>
+                <textarea type="text" class="form-control" name="detail" 
+                          ng-model="vm.new_situation.detail"
+                          ng-required="true">
+                </textarea>
+                <span class="text-danger" ng-show="situation.detail.$invalid && situation.detail.$touched">
+                    El detalle de la falla en el desde donde es un campo obligatorio
+                </span>
+            </div>
+            <button type="button" class="btn btn-default"
+                    ng-click="vm.flag_new_situation = false">
+                <label class="glyphicon glyphicon-erase"></label> Cancelar
+            </button>
+            <button type="submit" class="btn btn-success"
+                    ng-disabled="situation.$invalid || vm.btn_waiting_save_situation">
+                <label class="glyphicon glyphicon-floppy-disk"></label> Guardar
+            </button>
+        </form>
+    </div>
+    
+    <div class="col-md-10 col-md-offset-1 text-center">
+        <div class="title">Fallas en el desde donde</div>
+        <table class="table table-striped">
+            <tr>
+                <th></th>
+                <th>Nombre</th>
+                <th></th>
+            </tr>
+            <tr ng-repeat="falla in vm.fwfs">
+                <td></td>
+                <td>{{ falla.detail }}</td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+</div>

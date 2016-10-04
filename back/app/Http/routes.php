@@ -26,3 +26,6 @@ Route::resource('result-phrase', 'Result\ResultPhraseController');
 Route::resource('deviation', 'Result\DeviationController');
 Route::resource('failed', 'Result\FailedController');
 Route::resource('situation', 'Situation\situationController');
+Route::resource('analysis', 'Peirce\analysisController');
+Route::resource('fwf', 'Core\FromWhereFailureController');
+Route::resource('method', 'Core\FromWhereFailureController');

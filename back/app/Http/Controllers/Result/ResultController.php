@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Magia\Http\Requests;
 use Magia\Http\Controllers\Controller;
 use Magia\Models\Result\Result;
+use Magia\Http\Controllers\Result\ResultPhraseController;
 
 class ResultController extends Controller
 {
@@ -23,9 +24,7 @@ class ResultController extends Controller
                                 },
                                 'result_phrases.failed' => function ($query) {
                                     $query->orderBy('created_at', 'desc'); 
-                                },
-                                'result_phrases.deviation_origin',
-                                'result_phrases.deviation_final'
+                                }
                             ])
                         ->where('user_id', 1)
                         ->orderBy('created_at', 'desc')
@@ -52,22 +51,29 @@ class ResultController extends Controller
     public function store(Request $request)
     {
         $name = $request->input('name');
-        
+
         $duplicate = self::checkDuplicate($name);
-        
+
         if($duplicate->count() === 0){
-            return Result::create(array(
+            $new_result = Result::create(array(
                 'user_id' => 1,
                 'name' => $name
             ));
+
+            if($request->input('chaos') != '' || $request->input('detail') != ''){
+                $result_phrase = ResultPhraseController::store($request, $new_result->id);
+                $result_phrase->failed = [];
+                $new_result->otro_campo = 'si se almacena';
+                $new_result->result_phrases = ['0' => $result_phrase];
+            }
+
+            return $new_result;
         }
         else {
             return response()->json([
                 'message' => 'Nombre de resultado duplicado'
             ], 500);
-            
         }
-        
     }
 
     /**
@@ -82,7 +88,7 @@ class ResultController extends Controller
         return Result::with(['result_phrases' => function ($query) {
                                     $query->orderBy('created_at', 'desc'); 
                                 }
-                            ])
+                            , 'result_phrases.failed'])
                         ->find($id);
     }
 

@@ -6,15 +6,21 @@
         .module('app.situation')
         .controller('Situation', Situation);
 
-    Situation.$inject = ['$uibModal', '$log', '$routeParams', 'situationService', 'resultService'];
+    Situation.$inject = ['$uibModal', '$log', '$routeParams', '$location', 'METHODS', 'situationService', 'resultService'];
 
-    function Situation($uibModal, $log, $routeParams, situationService, resultService){
+    function Situation($uibModal, $log, $routeParams, $location, METHODS, situationService, resultService){
         var vm = this;
 
         vm.situations = [];
-        vm.method_selected = $routeParams.method;
-
-        console.log(vm.method_selected);
+        vm.new_situation = {};
+        vm.method_selected = {};
+        vm.method_selected.name = $routeParams.method;
+        vm.method_selected.id = METHODS[vm.method_selected.name.toUpperCase()];
+        vm.flag_new_situation = false;
+        vm.createSituation = createSituation;
+        vm.goToPierce = goToPierce;
+        vm.backToHome = backToHome;
+        vm.result_id = $routeParams.result_id;
 
         activate($routeParams.result_id);
 
@@ -27,11 +33,11 @@
             return situationService.getSituations(result_id).$promise
                     .then(getResultsComplete)
                     .catch(getResultsError);
-                    
+
             function getResultsComplete(data , status, headers, config){
                 return vm.situations = data;
             }
-            
+
             function getResultsError(error){
                 console.log(error);
             }
@@ -51,6 +57,42 @@
                 console.log(error);
             }
         }
+        
+        function createSituation(){
+            
+            vm.btn_waiting_save_situation = true;
+            vm.new_situation.result_id = vm.result_id;
+            vm.new_situation.method_id = vm.method_selected.id;
+            situationService.createSituation(vm.new_situation).$promise
+                    .then(createSituationComplete)
+                    .catch(createSituationError);
+            
+            function createSituationComplete(data, status, headers, config){
+                
+                data.methods = [{'id': vm.method_selected.id, 'name': vm.method_selected.name}];
+                vm.situations.unshift(data);
+                vm.new_situation = {};
+                vm.flag_new_situation = false;
+                vm.btn_waiting_save_situation = false;
+            }
+
+            function createSituationError(error){
+                if(error.data.message){
+                    alert(error.data.message);
+                    vm.btn_waiting_save_situation = false;
+                }
+            }
+        }
+        
+        function goToPierce(situation_id){
+            $location.path('/peirce/'+situation_id);
+        }
+        
+        function backToHome(){
+            $location.path('/result');
+        }
+        
+        
 
 
         // TODO_MAGIA: Refactorizar

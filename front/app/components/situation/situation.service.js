@@ -11,11 +11,17 @@
     function situationService($resource, API_URL){
 
         var service = {
+            getSituation : getSituation,
             getSituations : getSituations,
             createSituation : createSituation,
             updateSituation : updateSituation
         };
         return service;
+
+        function getSituation(id){
+            var Situation = $resource(API_URL + 'situation/:id', {id : '@id'});
+            return Situation.get({'id' : id});            
+        }
 
         function getSituations(result_id){
             var Situation = $resource(API_URL + 'situation');
