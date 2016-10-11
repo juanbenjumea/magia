@@ -9,5 +9,6 @@
             , 'app.peirce'
             , 'app.report'
             , 'app.fwf'
+            , 'app.steps'
         ]);
 })();

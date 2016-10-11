@@ -11,12 +11,62 @@
         <h3>{{ vm.situation.name }}</h3>
     </div>
     <div class="col-md-12 text-center">
-        <div class="new_line_sm"></div>
-        <p>{{ vm.situation.detail }}</p>
+        <h5>{{ vm.situation.detail }}</h5>
     </div>
+</div>
+
+<div class="row" id="peirce_diagram">
     
+    <div class="col-md-10 col-md-offset-1 text-right">
+        <button class="btn btn-success"
+                ng-show="!vm.flag_new_analysis"
+                ng-disabled="vm.flag_has_solution == 1"
+                ng-click="vm.addLogics()">
+            <span class="glyphicon glyphicon-repeat"></span> Giro situacional
+        </button>
+    </div>
+    <div class="col-md-10 col-md-offset-1 row__toogle"
+                ng-show="vm.flag_new_analysis">
+        <form name="analysis" class="form-horizontal">
+            <div class="row">
+                <div class="col-md-10 col-md-offset-1">
+                    <div class="new_line"></div>
+                    <div class="checkbox" ng-repeat="logic in vm.logics">
+                        <label>
+                            <input type="checkbox" name="analysis_logics" 
+                                   checklist-model="vm.new_analysis_logics" 
+                                   checklist-value="logic.id"> 
+                            <strong>{{ logic.name }}</strong>
+                            (<span ng-repeat="quadrant in logic.quadrants">
+                                {{ quadrant.name }}<span ng-hide="$index == 3">, </span>
+                            </span>)
+                        </label>
+                        <div class="new_line"></div>
+                    </div>
+                    <div class="text-center">
+                        <button type="button" class="btn btn-default"
+                                ng-click="vm.flag_new_analysis = false">
+                            <label class="glyphicon glyphicon-erase"></label> Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary"
+                                ng-show="vm.flag_analysis_update"
+                                ng-click="vm.updateAnalysis()"
+                                ng-disabled="vm.new_analysis_logics.length == 0 || vm.btn_waiting_update_analysis ">
+                            <label class="glyphicon glyphicon-floppy-disk"></label> Actualizar
+                        </button>
+                        <button type="submit" class="btn btn-success"
+                                ng-show="!vm.flag_analysis_update"
+                                ng-click="vm.createAnalysis()"
+                                ng-disabled="vm.new_analysis_logics.length == 0 || vm.btn_waiting_save_analysis">
+                            <label class="glyphicon glyphicon-floppy-disk"></label> Guardar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
     <div class="col-md-12 text-center"
-         ng-show="!vm.flag_view_all_analysis">
+         ng-show="vm.analysis.length > 0 && !vm.flag_view_all_analysis">
         <div class="row">
             <div class="col-md-4 col-md-offset-1 text-right">
                 {{ vm.analysis[0].created_at }}
@@ -27,6 +77,11 @@
                         {{ logic.name }}
                     </button> 
                 </span>
+                <button class="btn btn-default btn-xs" title="Agregar lógica"
+                        ng-click="vm.addLogics(vm.analysis[0])"
+                        ng-disabled="vm.flag_has_solution == 1">
+                    <span class="glyphicon glyphicon-plus"></span>
+                </button>
             </div>
         </div>
         <span ng-show="vm.analysis.length > 1">
@@ -52,132 +107,126 @@
         </div>
         <a href="" ng-click="vm.flag_view_all_analysis = false">Ocultar</a>
     </div>
-</div>
-
-<div class="row" id="peirce_diagram">
-    <div class="col-xs-10 col-xs-offset-1 col-sm-6 col-sm-offset-3 col-lg-4 col-lg-offset-4 ">
+    
+    <div class="col-md-12">
+        <hr>
+    </div>
+    
+    <div class="col-xs-10 col-xs-offset-1 col-md-6 col-md-offset-3"
+            ng-show="vm.analysis.length > 0">
         <div class="square square1">
             <div class="box box__top box__left">
                 <span class='btn' title="Hipotesis"
-                        ng-class="peirce.selected_quadrant === 1 ? 'btn-success' : 'btn-primary'" 
-                        ng-disabled="peirce.disabled_btn_hypothesis[1]" 
-                        ng-click="peirce.modalHypothesis(1, 1)">
+                        ng-class="vm.quadrant_hypothesis === 1 ? 'btn-success' : 'btn-primary'" 
+                        ng-disabled="vm.quadrant_hypothesis != 1 && vm.quadrant_hypothesis != 0" 
+                        ng-click="vm.modalHypothesis(1)">
                     <i class='glyphicon glyphicon-pushpin'></i>
                 </span>
                 <span class='btn' title="Tesis"
-                        ng-class="peirce.opposite_cuadrant === 1 ? 'btn-success' : 'btn-primary'" 
-                        ng-disabled="peirce.disabled_btn_thesis[1]" 
-                        ng-click="peirce.modalHypothesis(2, 1)">
+                        ng-class="vm.quadrant_thesis === 1 ? 'btn-success' : 'btn-primary'" 
+                        ng-disabled="vm.quadrant_thesis !== 1" 
+                        ng-click="vm.modalThesis(1)">
                     <i class='glyphicon glyphicon-star'></i>
                 </span>
                 <span class='btn btn-default' title="Zona de emergencia"
-                        ng-click="peirce.modalEmergency(1)">
+                        ng-click="vm.modalEmergencyZone(1)">
                     <i class='glyphicon glyphicon-exclamation-sign'></i>
                 </span>
             </div>
             <div class="box box__center">
-                <span 
-                        ng-repeat="set_logic in peirce.set_logics" 
-                        ng-class="
-                            peirce.hypothesis_logic_used[set_logic.id] === true && peirce.selected_quadrant === 1 
-                            || peirce.thesis_logic_used[set_logic.id] === true && peirce.opposite_cuadrant === 1
-                                ? 'text-primary' : ''" 
-                        >
-                    @{{ set_logic.quadrant[1].name }}<br>
+                <span ng-repeat="logic in vm.analysis[0].logics">
+                    <span ng-repeat="quadrant in logic.quadrants | filter: {position: 1}">
+                        {{ quadrant.name }}
+                        <br>
+                    </span>
                 </span>
             </div>
             <button class="box box__bottom box__union" 
-                        ng-class="!peirce.disabled_btn_solution? 'btn-success box__union__enabled' : ''" 
-                        ng-click="peirce.modalSolution()"
-                        ng-disabled="peirce.disabled_btn_solution" 
-                    ><i ng-hide="peirce.disabled_btn_solution" class='glyphicon glyphicon-ok-circle'></i></button>
+                        ng-class="vm.flag_enable_solution === 1? 'btn-success box__union__enabled' : ''" 
+                        ng-click="vm.modalSolution()"
+                        ng-disabled="vm.flag_enable_solution === 0" 
+                    ><i ng-hide="vm.flag_enable_solution === 0" class='glyphicon glyphicon-ok-circle'></i></button>
         </div>
         <div class="square square2">
             <div class="box box__right">
                 <span class='btn btn-default' title="Zona de emergencia"
-                        ng-click="peirce.modalEmergency(2)">                              
+                        ng-click="vm.modalEmergencyZone(2)">                              
                     <i class='glyphicon glyphicon-exclamation-sign'></i>
                 </span>
                 <span class='btn' title="Tesis"
-                        ng-class="peirce.opposite_cuadrant === 2 ? 'btn-success' : 'btn-primary'" 
-                        ng-disabled="peirce.disabled_btn_thesis[2]" 
-                        ng-click="peirce.modalHypothesis(2, 2)">
+                        ng-class="vm.quadrant_thesis === 2 ? 'btn-success' : 'btn-primary'" 
+                        ng-disabled="vm.quadrant_thesis !== 2" 
+                        ng-click="vm.modalThesis(2)">
                     <i class='glyphicon glyphicon-star'></i>
                 </span>
                 <span class='btn' title="Hipotesis"
-                        ng-class="peirce.selected_quadrant === 2 ? 'btn-success' : 'btn-primary'" 
-                        ng-disabled="peirce.disabled_btn_hypothesis[2]" 
-                        ng-click="peirce.modalHypothesis(1, 2)">
+                        ng-class="vm.quadrant_hypothesis === 2 ? 'btn-success' : 'btn-primary'" 
+                        ng-disabled="vm.quadrant_hypothesis != 2 && vm.quadrant_hypothesis != 0" 
+                        ng-click="vm.modalHypothesis(2)">
                     <i class='glyphicon glyphicon-pushpin'></i>
                 </span>
             </div>
             <div class="box box__center">
-                <span 
-                        ng-repeat="set_logic in peirce.set_logics"
-                        ng-class="
-                            peirce.hypothesis_logic_used[set_logic.id] === true && peirce.selected_quadrant === 2 
-                            || peirce.thesis_logic_used[set_logic.id] === true && peirce.opposite_cuadrant === 2
-                                ? 'text-primary' : ''" >
-                    @{{ set_logic.quadrant[2].name }}<br>
+                <span ng-repeat="logic in vm.analysis[0].logics">
+                    <span ng-repeat="quadrant in logic.quadrants | filter: {position: 2}">
+                        {{ quadrant.name }}
+                        <br>
+                    </span>
                 </span>
             </div>
         </div>
         <div class="square square3">
             <div class="box box__center">
-                <span 
-                        ng-repeat="set_logic in peirce.set_logics"
-                        ng-class="
-                            peirce.hypothesis_logic_used[set_logic.id] === true && peirce.selected_quadrant === 4 
-                            || peirce.thesis_logic_used[set_logic.id] === true && peirce.opposite_cuadrant === 4
-                                ? 'text-primary' : ''" >
-                    @{{ set_logic.quadrant[4].name }}<br>
+                <span ng-repeat="logic in vm.analysis[0].logics">
+                    <span ng-repeat="quadrant in logic.quadrants | filter: {position: 4}">
+                        {{ quadrant.name }}
+                        <br>
+                    </span>
                 </span>
             </div>
             <div class="box box__bottom box__left">
                 <span class='btn' title="Hipotesis"
-                        ng-class="peirce.selected_quadrant === 4 ? 'btn-success' : 'btn-primary'" 
-                        ng-disabled="peirce.disabled_btn_hypothesis[4]" 
-                        ng-click="peirce.modalHypothesis(1, 4)">
+                        ng-class="vm.quadrant_hypothesis === 4 ? 'btn-success' : 'btn-primary'" 
+                        ng-disabled="vm.quadrant_hypothesis != 4 && vm.quadrant_hypothesis != 0" 
+                        ng-click="vm.modalHypothesis(4)">
                     <i class='glyphicon glyphicon-pushpin'></i>
                 </span>
                 <span class='btn btn-primary' title="Tesis"
-                        ng-class="peirce.opposite_cuadrant === 4 ? 'btn-success' : 'btn-primary'" 
-                        ng-disabled="peirce.disabled_btn_thesis[4]" 
-                        ng-click="peirce.modalHypothesis(2, 4)">
+                        ng-class="vm.quadrant_thesis === 4 ? 'btn-success' : 'btn-primary'" 
+                        ng-disabled="vm.quadrant_thesis !== 4" 
+                        ng-click="vm.modalThesis(4)">
                     <i class='glyphicon glyphicon-star'></i>
                 </span>
                 <span class='btn btn-default' title="Zona de emergencia"
-                        ng-click="peirce.modalEmergency(4)">
+                        ng-click="vm.modalEmergencyZone(4)">
                     <i class='glyphicon glyphicon-exclamation-sign'></i>
                 </span>
             </div>
         </div>
         <div class="square square4">
             <div class="box box__center">
-                <span 
-                        ng-repeat="set_logic in peirce.set_logics"
-                        ng-class="
-                            peirce.hypothesis_logic_used[set_logic.id] === true && peirce.selected_quadrant === 3 
-                            || peirce.thesis_logic_used[set_logic.id] === true && peirce.opposite_cuadrant === 3
-                                ? 'text-primary' : ''">
-                    @{{ set_logic.quadrant[3].name }}<br>
+                <span ng-repeat="logic in vm.analysis[0].logics">
+                    <span ng-repeat="quadrant in logic.quadrants | filter: {position: 3}">
+                        {{ quadrant.name }}
+                        <br>
+                    </span>
                 </span>
             </div>
             <div class="box box__bottom box__right">
                 <span class='btn btn-default' title="Zona de emergencia"
-                        ng-click="peirce.modalEmergency(3)">
+                        ng-click="vm.modalEmergencyZone(3)">
                     <i class='glyphicon glyphicon-exclamation-sign'></i>
                 </span>
                 <span class='btn btn-primary' title="Tesis"
-                        ng-class="peirce.opposite_cuadrant === 3 ? 'btn-success' : 'btn-primary'" 
-                        ng-disabled="peirce.disabled_btn_thesis[3]" 
-                        ng-click="peirce.modalHypothesis(2, 3)">
+                        ng-class="vm.quadrant_thesis === 3 ? 'btn-success' : 'btn-primary'" 
+                        ng-disabled="vm.quadrant_thesis !== 3" 
+                        ng-click="vm.modalThesis(3)">
                     <i class='glyphicon glyphicon-star'></i>
                 </span>
                 <span class='btn' title="Hipotesis"
-                        ng-class="peirce.selected_quadrant === 3 ? 'btn-success' : 'btn-primary'" 
-                        ng-disabled="peirce.disabled_btn_hypothesis[3]" 
-                        ng-click="peirce.modalHypothesis(1, 3)">
+                        ng-class="vm.quadrant_hypothesis === 3 ? 'btn-success' : 'btn-primary'" 
+                        ng-disabled="vm.quadrant_hypothesis != 3 && vm.quadrant_hypothesis != 0" 
+                        ng-click="vm.modalHypothesis(3)">
                     <i class='glyphicon glyphicon-pushpin'></i>
                 </span>
             </div>                        

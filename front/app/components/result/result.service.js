@@ -6,14 +6,15 @@
         .module('app.result')
         .factory('resultService', resultService);
 
-    resultService.$inject = ['$resource', '$http', 'API_URL'];
+    resultService.$inject = ['$resource', '$http', 'API_URL', '$window'];
 
-    function resultService($resource, $http, API_URL){
+    function resultService($resource, $http, API_URL, $window){
 
         var service = {
             getResult : getResult,
             getResults : getResults,
             createResult : createResult,
+            createIntegration : createIntegration,
             updateResult : updateResult,
             createResultPhrase : createResultPhrase,
             updateResultPhrase : updateResultPhrase,
@@ -30,8 +31,9 @@
         }
 
         function getResults(){
+            var token = $window.sessionStorage.token;
             var Result = $resource(API_URL + 'result');
-            return Result.query();
+            return Result.query({'token':token});
         }
 
         function createResult(new_result) {
@@ -42,6 +44,11 @@
         function updateResult(result, id) {
             var Result = $resource(API_URL + 'result/:id', {id : '@id'}, {'update': { method:'PUT' }});
             return Result.update({'id' : id}, result);
+        }
+        
+        function createIntegration(new_integration, result_id){
+            var Result = $resource(API_URL + 'result/:id', {id : '@id'}, {'update': { method:'PUT' }});
+            return Result.update({'id' : result_id}, new_integration);
         }
 
         function completeResult(id) {

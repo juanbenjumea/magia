@@ -15,8 +15,11 @@
         vm.completeResult = completeResult;
         vm.createResult = createResult;
         vm.createResultPhrase = createResultPhrase;
+        vm.createSadhana = createSadhana;
+        vm.createMerge = createMerge;
+        vm.createBeyond = createBeyond;
+        vm.goToSteps = goToSteps;
         vm.goToPierce = goToPierce;
-        vm.modalOpenAddResult = modalOpenAddResult;
         vm.newResultPhraseIni = newResultPhraseIni;
         vm.createFailed = createFailed;
         vm.createDeviation = createDeviation;
@@ -26,12 +29,16 @@
         vm.updateResult = updateResult;
         vm.updateResultPhrase = updateResultPhrase;
 
-        vm.result_selected = {};
-        vm.new_result = {};
-        vm.new_result_phrase = {};
-        vm.result_phrases = {};
         vm.flag_new_result = true;
         vm.flag_edit_result = false;
+        vm.integration_types = [];
+        vm.new_result = {};
+        vm.new_result_phrase = {};
+        vm.new_beyond = {};
+        vm.new_sadhana = {};
+        vm.new_merge = {};
+        vm.result_phrases = {};
+        vm.result_selected = {};
         
         activate();
 
@@ -202,6 +209,90 @@
             }
         }
 
+        function createBeyond(){
+            vm.btn_waiting_save_beyond = true;
+            if(!vm.new_beyond.parent || !vm.new_beyond.son){
+                vm.btn_waiting_save_beyond = false;
+                return;
+            }
+            vm.new_beyond.integration = 'beyond';
+            vm.new_beyond.result_id = vm.result_selected.id;
+            resultService.createIntegration(vm.new_beyond, vm.result_selected.id).$promise
+                    .then(createIntegrationComplete)
+                    .catch(createIntegrationError);
+
+            function createIntegrationComplete(data){
+                if(vm.result_selected.id == vm.new_beyond.son || vm.result_selected.id == vm.new_beyond.parent){
+                    selectResult(vm.result_selected.id);
+                }
+                vm.new_beyond = {};
+                vm.new_sadhana = {};
+                vm.new_merge = {};
+                getResults();
+                vm.btn_waiting_save_beyond = false;
+            }
+
+            function createIntegrationError(){
+                vm.btn_waiting_save_beyond = false;
+            }
+        }
+
+        function createSadhana(){
+            vm.btn_waiting_save_sadhana = true;
+            if(!vm.new_sadhana.parent || !vm.new_sadhana.son){
+                vm.btn_waiting_save_sadhana = false;
+                return;
+            }
+            vm.new_sadhana.integration = 'sadhana';
+            vm.new_sadhana.result_id = vm.result_selected.id;
+            resultService.createIntegration(vm.new_sadhana, vm.result_selected.id).$promise
+                    .then(createIntegrationComplete)
+                    .catch(createIntegrationError);
+
+            function createIntegrationComplete(data){
+                if(vm.result_selected.id == vm.new_sadhana.son || vm.new_sadhana.id == vm.new_beyond.parent){
+                    selectResult(vm.result_selected.id);
+                }
+                vm.new_beyond = {};
+                vm.new_sadhana = {};
+                vm.new_merge = {};
+                getResults();
+                vm.btn_waiting_save_sadhana = false;
+            }
+
+            function createIntegrationError(){
+                vm.btn_waiting_save_sadhana = false;
+            }
+        }
+
+        function createMerge(){
+            vm.btn_waiting_save_sadhana = true;
+            if(!vm.new_merge.parent || !vm.new_merge.son){
+                vm.btn_waiting_save_sadhana = false;
+                return;
+            }
+            vm.new_merge.integration = 'merge';
+            vm.new_merge.result_id = vm.result_selected.id;
+            resultService.createIntegration(vm.new_merge, vm.result_selected.id).$promise
+                    .then(createIntegrationComplete)
+                    .catch(createIntegrationError);
+
+            function createIntegrationComplete(data){
+                if(vm.result_selected.id == vm.new_merge.son || vm.result_selected.id == vm.new_merge.parent){
+                    selectResult(vm.result_selected.id);
+                }
+                vm.new_beyond = {};
+                vm.new_sadhana = {};
+                vm.new_merge = {};
+                getResults();
+                vm.btn_waiting_save_merge = false;
+            }
+
+            function createIntegrationError(){
+                vm.btn_waiting_save_merge = false;
+            }
+        }
+
         function newResultPhraseIni(){
             vm.new_result_phrase = {};
         }
@@ -212,7 +303,7 @@
             // pues cuando se crea información no se está está asociando al array que hay en el value
 
             vm.flag_new_result = false;
-            vm.tab_result_option = 0;
+            //vm.tab_result_option = 0;
             vm.result_phrase_detail = '';
             vm.result_phrase_chaos = '';
             vm.update_result_phrase = {};
@@ -231,6 +322,7 @@
             
             function getResultComplete(data, status, headers, config){
                 vm.result_selected = data;
+                console.log(data);
 
                 if(vm.result_selected.result_phrases.length > 0){
 
@@ -256,41 +348,9 @@
             $location.path('/situation/peirce/'+vm.result_selected.id);
         }
 
-
-
-
-
-
-
-
-
-        // TODO_MAGIA: Refactorizar
-        function modalOpenAddResult(size) {
-            var modalInstance = $uibModal.open({
-                animation: true,
-                ariaLabelledBy: 'modal-title',
-                ariaDescribedBy: 'modal-body',
-                templateUrl: 'app/components/result/modals/result-new.html',
-                controller: 'ResultNew',
-                controllerAs: 'vm',
-                size: size,
-                resolve: {
-                    items: function () {
-                        return vm.items;
-                    }
-                }
-            });
-
-            // Callback cuando cierra 
-            modalInstance.result.then(function (selectedItem) {
-                // Con close()
-                vm.selected = selectedItem;
-                console.log('pasando');
-            }, function () {
-                // Con dismiss()
-                $log.info('Modal dismissed at: ' + new Date());
-            });
-        }; 
+        function goToSteps(){
+            $location.path('/steps/'+vm.result_selected.id);
+        }
     }
 })();
 

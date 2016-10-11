@@ -3,12 +3,14 @@
     'use strict';
 
     angular
-        .module('app.result')
+        .module('app.peirce')
         .controller("ResultNew",
             ['$uibModalInstance', 'items'
             , ResultNew]);
 
     function ResultNew($uibModalInstance, items){
+        console.log('modale');
+        console.log(items);
         var vm = this;
         //vm.items = items;
         vm.items = [1,2,3];

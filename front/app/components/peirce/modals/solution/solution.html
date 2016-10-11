@@ -1,0 +1,30 @@
+<div class="modal-header">
+    <h3 class="modal-title" id="modal-title">Solución</h3>
+</div>
+<div class="modal-body" id="modal-body">
+
+    <form name="solution" class="form-horizontal">
+        <div class="form-group">
+            <div class="col-sm-10 col-sm-offset-1">
+                <label class="control-label">Detalle</label>
+                <textarea class="form-control" name="detail"
+                          ng-model="vm.new_solution.detail"
+                          ng-required="true"></textarea>
+                <span class="text-danger" ng-show="solution.detail.$invalid && solution.detail.$touched">
+                    Debes ingresar un texto para la solución
+                </span>
+            </div>
+        </div>
+        <div class="text-center">
+            <button type="button" class="btn btn-default"
+                    ng-click="vm.dismiss()">
+                <label class="glyphicon glyphicon-erase"></label> Deshacer
+            </button>
+            <button type="submit" class="btn btn-success"
+                    ng-click="vm.createSolution()">
+                <label class="glyphicon glyphicon-floppy-disk"
+                       ng-disabled="solution.$invalid"></label> Guardar
+            </button>
+        </div>
+    </form>
+</div>

@@ -17,7 +17,9 @@ class AnalysisController extends Controller
      */
     public function index(Request $request)
     {
-        return Analysis::with(['logics'])
+        return Analysis::with(['logics.quadrants'
+                                , 'hypothesis.quadrant.logic_type'
+                                , 'thesis.quadrant.logic_type'])
                         ->where('situation_id', $request->input('situation_id'))
                         ->orderBy('created_at', 'desc')
                         ->get();
@@ -41,7 +43,12 @@ class AnalysisController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $analysis = Analysis::create(array(
+                        'situation_id' => $request->input('situation_id')
+                    ));
+        $logics = $analysis->logics()->attach($request->input('logics'));
+        $analysis->logics = $logics;
+        return $analysis;
     }
 
     /**
@@ -75,7 +82,8 @@ class AnalysisController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $analysis = Analysis::find($id);
+        return $analysis->logics()->sync($request->input('logics'));
     }
 
     /**

@@ -15,9 +15,13 @@ class FromWhereFailureController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return FromWhereFailure::get();
+        $token = $request->input('token');
+        $user = JWTAuth::toUser($token);
+        return FromWhereFailure::where('user_id', $user->id)
+                                ->orWhere('core', 1)
+                                ->get();
     }
 
     /**
@@ -27,7 +31,7 @@ class FromWhereFailureController extends Controller
      */
     public function create()
     {
-        //
+
     }
 
     /**
@@ -38,7 +42,12 @@ class FromWhereFailureController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $fwf = FromWhereFailure::create(array(
+            'user_id' => 1,
+            'core' => 0,
+            'detail' => $request->input('detail')
+        ));
+        return $fwf;
     }
 
     /**

@@ -19,4 +19,12 @@ class Analysis extends Model {
     public function logics() {
         return $this->belongsToMany('\Magia\Models\Peirce\LogicType', 'pr_analysis_logic', 'analysis_id', 'logic_type_id');
     }
+
+    public function hypothesis() {
+        return $this->hasMany('\Magia\Models\Peirce\Hypothesis', 'analysis_id', 'id');
+    }
+
+    public function thesis() {
+        return $this->hasMany('\Magia\Models\Peirce\Thesis', 'analysis_id', 'id');
+    }
 }

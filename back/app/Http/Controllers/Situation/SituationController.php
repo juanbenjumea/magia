@@ -54,6 +54,11 @@ class SituationController extends Controller
             $situation = Situation::create($data);
             $methods = $situation->methods()->attach($request->input('method_id'), ['original' => 1]);
             $situation->methods = $methods;
+            
+            if($request->has('step')){
+                $steps = $situation->steps()->attach($request->input('step'));
+                $situation->steps = $steps;
+            }
         }
         else {
             return response()->json([
@@ -72,8 +77,8 @@ class SituationController extends Controller
      */
     public function show($id)
     {
-        // TODO_MAGIA: Verificar que la sitaución pretencezca al usuario
-        return Situation::with(['analysis' => function ($query) {
+        // TODO_MAGIA: Verificar que la situación pretenezca al usuario
+        return Situation::with(['solution', 'analysis' => function ($query) {
                                     $query->orderBy('created_at', 'desc'); 
                                 }
                             ])

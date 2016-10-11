@@ -1,33 +1,38 @@
 <div class="row">
     <div class="col-md-10 col-md-offset-1 text-right">
         <button class="btn btn-success"
-                ng-show="!vm.flag_new_situation"
-                ng-click="vm.flag_new_situation = true">
+                ng-show="!vm.flag_new_fwf"
+                ng-click="vm.flag_new_fwf = true">
             <span class="glyphicon glyphicon-plus"></span> Nueva Falla en el desde donde
         </button>
     </div>
-    <div class="col-md-8 col-md-offset-2 text-center">
-        <form class="form-horizontal" name="situation"
-                ng-show="vm.flag_new_situation">
-            <div class="new_line"></div>
-            <div class="form-group">
-                <label>Nombre</label>
-                <textarea type="text" class="form-control" name="detail" 
-                          ng-model="vm.new_situation.detail"
-                          ng-required="true">
-                </textarea>
-                <span class="text-danger" ng-show="situation.detail.$invalid && situation.detail.$touched">
-                    El detalle de la falla en el desde donde es un campo obligatorio
-                </span>
+    <div class="col-md-10 col-md-offset-1 text-center row__toogle"
+                ng-show="vm.flag_new_fwf">
+        <form class="form-horizontal" name="fwf"
+                ng-submit="vm.createFwf()">
+            <div class="row">
+                <div class="col-md-10 col-md-offset-1">
+                    <div class="new_line"></div>
+                    <div class="form-group">
+                        <label>Nombre</label>
+                        <textarea type="text" class="form-control" name="detail" 
+                                  ng-model="vm.new_fwf.detail"
+                                  ng-required="true">
+                        </textarea>
+                        <span class="text-danger" ng-show="fwf.detail.$invalid && fwf.detail.$touched">
+                            El detalle de la falla en el desde donde es un campo obligatorio
+                        </span>
+                    </div>
+                    <button type="button" class="btn btn-default"
+                            ng-click="vm.flag_new_fwf = false">
+                        <label class="glyphicon glyphicon-erase"></label> Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-success"
+                            ng-disabled="fwf.$invalid || vm.btn_waiting_save_fwf">
+                        <label class="glyphicon glyphicon-floppy-disk"></label> Guardar
+                    </button>
+                </div>
             </div>
-            <button type="button" class="btn btn-default"
-                    ng-click="vm.flag_new_situation = false">
-                <label class="glyphicon glyphicon-erase"></label> Cancelar
-            </button>
-            <button type="submit" class="btn btn-success"
-                    ng-disabled="situation.$invalid || vm.btn_waiting_save_situation">
-                <label class="glyphicon glyphicon-floppy-disk"></label> Guardar
-            </button>
         </form>
     </div>
     
@@ -39,9 +44,12 @@
                 <th>Nombre</th>
                 <th></th>
             </tr>
-            <tr ng-repeat="falla in vm.fwfs">
-                <td></td>
-                <td>{{ falla.detail }}</td>
+            <tr ng-repeat="fail in vm.fwfs">
+                <td>
+                    <span class="glyphicon glyphicon-alert"
+                          ng-show="fail.core == 1"></span>
+                </td>
+                <td>{{ fail.detail }}</td>
                 <td></td>
             </tr>
         </table>

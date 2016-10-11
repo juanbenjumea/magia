@@ -14,6 +14,23 @@
     height: 100px !important;
 }
 
+.tree {
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+.tree__branch_0{
+    margin-left: 10px;
+}
+
+.tree__branch_1{
+    margin-left: 30px;
+}
+
+.tree__branch_2{
+    margin-left: 50px;
+}
+
 .textarea__large {
     height: 200px !important;
 }
@@ -31,6 +48,12 @@
     color: #9a0f0f;
     padding: 20px;
     border: 1px #f1dcb1 solid;
+}
+
+.row__toogle {
+    background-color: #fafafa;
+    border: 1px solid #f1f1f1;
+    margin-bottom: 30px;
 }
 
 .square {

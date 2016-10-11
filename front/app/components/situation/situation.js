@@ -91,37 +91,7 @@
         function backToHome(){
             $location.path('/result');
         }
-        
-        
 
-
-        // TODO_MAGIA: Refactorizar
-        function modalOpenAddResult(size) {
-            var modalInstance = $uibModal.open({
-                animation: true,
-                ariaLabelledBy: 'modal-title',
-                ariaDescribedBy: 'modal-body',
-                templateUrl: 'app/components/result/modals/result-new.html',
-                controller: 'ResultNew',
-                controllerAs: 'vm',
-                size: size,
-                resolve: {
-                    items: function () {
-                        return vm.items;
-                    }
-                }
-            });
-
-            // Callback cuando cierra 
-            modalInstance.result.then(function (selectedItem) {
-                // Con close()
-                vm.selected = selectedItem;
-                console.log('pasando');
-            }, function () {
-                // Con dismiss()
-                $log.info('Modal dismissed at: ' + new Date());
-            });
-        }; 
     }
 })();
 

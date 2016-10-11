@@ -18,18 +18,24 @@ class LoginController extends Controller
         // grab credentials from the request
         $credentials = $request->only('email', 'password');
 
-        try {
-            // attempt to verify the credentials and create a token for the user
-            if (! $token = JWTAuth::attempt($credentials)) {
-                return response()->json(['error' => 'invalid_credentials'], 401);
-            }
-        } catch (JWTException $e) {
-            // something went wrong whilst attempting to encode the token
-            return response()->json(['error' => 'could_not_create_token'], 500);
+        // attempt to verify the credentials and create a token for the user
+        if (! $token = JWTAuth::attempt($credentials)) {
+            return response()->json(['error' => 'invalid_credentials'], 401);
         }
+        
+        $user = JWTAuth::toUser($token);
+        
+        $user_data = [
+            'id' => $user['id'],
+            'email' => $user['email'],
+            'name' => $user['name'],
+            'created_at' => $user['created_at'],
+            'updated_at' => $user['updated_at']
+        ];
+        
+        $data = array_merge($user_data, ['token' => $token]);
 
-        // all good so return the token
-        return response()->json(compact('token'));
+        return response()->json($data);
     }
     
     public function index(Request $request){

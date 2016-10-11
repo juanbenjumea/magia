@@ -17,7 +17,7 @@ class Situation extends Model {
     }
 
     public function solution() {
-        return $this->hasOne('\Magia\Models\Situation\Solution', 'situation_id', 'id');
+        return $this->hasMany('\Magia\Models\Situation\Solution', 'situation_id', 'id');
     }
 
     public function methods() {
@@ -26,5 +26,9 @@ class Situation extends Model {
     
     public function analysis(){
         return $this->hasMany('\Magia\Models\Peirce\Analysis');
+    }
+    
+    public function steps() {
+        return $this->belongsToMany('\Magia\Models\Steps\Steps', 'el_step_situation', 'situation_id', 'step_id');
     }
 }

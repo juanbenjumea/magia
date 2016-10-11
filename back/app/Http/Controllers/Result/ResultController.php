@@ -8,6 +8,8 @@ use Magia\Http\Requests;
 use Magia\Http\Controllers\Controller;
 use Magia\Models\Result\Result;
 use Magia\Http\Controllers\Result\ResultPhraseController;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 class ResultController extends Controller
 {
@@ -16,17 +18,25 @@ class ResultController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        $token = $request->input('token');
+        $user = JWTAuth::toUser($token);
         // TODO_MAGIA: Filtrar los resultados por usuario
         return Result::with([   'result_phrases' => function ($query) {
                                     $query->orderBy('created_at', 'desc'); 
-                                },
-                                'result_phrases.failed' => function ($query) {
+                                }
+                                , 'result_phrases.failed' => function ($query) {
                                     $query->orderBy('created_at', 'desc'); 
                                 }
+                                , 'beyond_son'
+                                , 'beyond_parent'
+                                , 'merge_sons'
+                                , 'merge_parent'
+                                , 'sadhana_sons'
+                                , 'sadhana_parent'    
                             ])
-                        ->where('user_id', 1)
+                        ->where('user_id', $user->id)
                         ->orderBy('created_at', 'desc')
                         ->take(10)
                         ->get();
@@ -88,7 +98,14 @@ class ResultController extends Controller
         return Result::with(['result_phrases' => function ($query) {
                                     $query->orderBy('created_at', 'desc'); 
                                 }
-                            , 'result_phrases.failed'])
+                            , 'result_phrases.failed'
+                            , 'beyond_son'
+                            , 'beyond_parent'
+                            , 'merge_sons'
+                            , 'merge_parent.merge_sons'
+                            , 'sadhana_sons'
+                            , 'sadhana_parent.sadhana_sons'
+                            ])
                         ->find($id);
     }
 
@@ -127,6 +144,21 @@ class ResultController extends Controller
         }
         if($request->has('completed')){
             $result->completed = $request->input('completed');
+        }
+        if($request->has('integration')){
+            $result = Result::find($request->input('son'));
+            $type = $request->input('integration');
+            switch($type){
+                case 'beyond':
+                    $result->result_beyond_id = $request->input('parent');
+                    break;
+                case 'sadhana':
+                    $result->result_sadhana_id = $request->input('parent');
+                    break;
+                case 'merge':
+                    $result->result_merge_id = $request->input('parent');
+                    break;
+            }
         }
         $result->save();
         return $result;

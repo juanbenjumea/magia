@@ -8,11 +8,10 @@
 
 <div class="row row__highlight">
     <div class="col-md-8 col-md-offset-2 text-center">
-        <h3>{{ vm.result.name }}</h3>
+        <h5>{{ vm.result.name }}</h5>
     </div>
     <div class="col-md-12 text-center">
-        <div class="new_line_sm"></div>
-        <p>{{ vm.result.result_phrases[0].detail }}</p>
+        <h3>{{ vm.result.result_phrases[0].detail }}</h3>
     </div>
 </div>
 
@@ -24,33 +23,37 @@
             <span class="glyphicon glyphicon-plus"></span> Nueva situación
         </button>
     </div>
-    <div class="col-md-8 col-md-offset-2 text-center">
-        <form class="form-horizontal" name="situation"
-                ng-submit="vm.createSituation()"
+    <div class="col-md-10 col-md-offset-1 text-center row__toogle"
                 ng-show="vm.flag_new_situation">
-            <div class="new_line"></div>
-            <div class="form-group">
-                <label>Nombre</label>
-                <input type="text" class="form-control" name="name" 
-                       ng-model="vm.new_situation.name"
-                       ng-required="true">
-                <span class="text-danger" ng-show="situation.name.$invalid && situation.name.$touched">
-                    El nombre de la situación es un campo obligatorio
-                </span>
+        <form class="form-horizontal" name="situation"
+                ng-submit="vm.createSituation()">
+            <div class="row">
+                <div class="col-md-10 col-md-offset-1">
+                    <div class="new_line"></div>
+                    <div class="form-group">
+                        <label>Nombre</label>
+                        <input type="text" class="form-control" name="name" 
+                               ng-model="vm.new_situation.name"
+                               ng-required="true">
+                        <span class="text-danger" ng-show="situation.name.$invalid && situation.name.$touched">
+                            El nombre de la situación es un campo obligatorio
+                        </span>
+                    </div>
+                    <div class="form-group">
+                        <label>Detalle</label>
+                        <textarea type="text" class="form-control" name="detail" 
+                                  ng-model="vm.new_situation.detail"></textarea>
+                    </div>
+                    <button type="button" class="btn btn-default"
+                            ng-click="vm.flag_new_situation = false">
+                        <label class="glyphicon glyphicon-erase"></label> Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-success"
+                            ng-disabled="situation.$invalid || vm.btn_waiting_save_situation">
+                        <label class="glyphicon glyphicon-floppy-disk"></label> Guardar
+                    </button>
+                </div>
             </div>
-            <div class="form-group">
-                <label>Detalle</label>
-                <textarea type="text" class="form-control" name="detail" 
-                          ng-model="vm.new_situation.detail"></textarea>
-            </div>
-            <button type="button" class="btn btn-default"
-                    ng-click="vm.flag_new_situation = false">
-                <label class="glyphicon glyphicon-erase"></label> Cancelar
-            </button>
-            <button type="submit" class="btn btn-success"
-                    ng-disabled="situation.$invalid || vm.btn_waiting_save_situation">
-                <label class="glyphicon glyphicon-floppy-disk"></label> Guardar
-            </button>
         </form>
     </div>
     

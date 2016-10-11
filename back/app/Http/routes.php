@@ -21,11 +21,19 @@ Route::group(['prefix' => 'api'], function () {
     Route::post('authenticate', 'Core\LoginController@authenticate');
 });
 
+Route::resource('fwf', 'Core\FromWhereFailureController');
+Route::resource('method', 'Core\FromWhereFailureController');
 Route::resource('result', 'Result\ResultController');
 Route::resource('result-phrase', 'Result\ResultPhraseController');
 Route::resource('deviation', 'Result\DeviationController');
 Route::resource('failed', 'Result\FailedController');
-Route::resource('situation', 'Situation\situationController');
-Route::resource('analysis', 'Peirce\analysisController');
-Route::resource('fwf', 'Core\FromWhereFailureController');
-Route::resource('method', 'Core\FromWhereFailureController');
+Route::resource('situation', 'Situation\SituationController');
+Route::resource('solution', 'Situation\SolutionController');
+Route::resource('analysis', 'Peirce\AnalysisController');
+Route::resource('logic-type', 'Peirce\LogicTypeController');
+Route::resource('hypothesis', 'Peirce\HypothesisController');
+Route::resource('thesis', 'Peirce\ThesisController');
+Route::resource('steps', 'Steps\StepsController');
+Route::auth();
+
+Route::get('/home', 'HomeController@index');
