@@ -65,8 +65,10 @@ class ResultController extends Controller
         $duplicate = self::checkDuplicate($name);
 
         if($duplicate->count() === 0){
+            $token = $request->input('token');
+            $user = JWTAuth::toUser($token);
             $new_result = Result::create(array(
-                'user_id' => 1,
+                'user_id' => $user->id,
                 'name' => $name
             ));
 
@@ -172,7 +174,8 @@ class ResultController extends Controller
      */
     public function destroy($id)
     {
-        //
+        Result::find($id)->delete();
+        return ['id' => $id];
     }
     
     

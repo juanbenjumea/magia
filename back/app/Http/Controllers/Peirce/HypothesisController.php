@@ -41,6 +41,8 @@ class HypothesisController extends Controller
     public function store(Request $request)
     {
         $error = 1;
+        Hypothesis::where('analysis_id', $request->input('analysis_id'))
+                    ->delete();
         foreach($request->input('hypothesis') as $quadrant_id => $detail){
             if($detail) {
                 Hypothesis::create(array(

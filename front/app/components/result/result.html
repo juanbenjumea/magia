@@ -3,8 +3,8 @@
         <label class="label_center">Resultados recientes: </label>
     </div>
     <div class="col-md-4" ng-show="vm.results">
-        <select class="form-control" ng-model="vm.last_results" ng-change="vm.selectResult()">
-            <option ng-repeat="result in vm.results" value="{{ result.id }}">{{ result.name }}</option>
+        <select class="form-control" ng-model="vm.last_results" ng-change="vm.selectResult()" ng-options="result.id as result.name for result in vm.results">
+            <option value="">Selecciona</option>
         </select>
     </div>
     <div class="col-md-4" ng-show="!vm.results">
@@ -45,7 +45,11 @@
                         </label>
                         <textarea class="form-control textarea__large" name="chaos" id="new_result_chaos"
                                 ng-model="vm.new_result.chaos"
+                                ng-required="!vm.new_result.detail"
                                 placeholder="Agregue el caos de la idea. Aquellas cosas que hacen o refieren a su resultado para luego escucharse y plantear una frase resultado"></textarea>
+                        <span class="text-danger" ng-show="new_result.chaos.$invalid && new_result.chaos.$touched">
+                            Debes ingresar la frase resultado o el caos de la idea
+                        </span>
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -55,7 +59,11 @@
                         </label>
                         <textarea class="form-control textarea__large" name="detail" id="new_result_detail"
                                 ng-model="vm.new_result.detail"
+                                ng-required="!vm.new_result.chaos"
                                 placeholder="Recuerde considerar que el resultado debe ser: Conmensurable (Que se pueda Medir), Imposible (no logrado por los medios que usualmente dispone), Denso (Tangible)  Convergente (Que integre)"></textarea>
+                        <span class="text-danger" ng-show="new_result.detail.$invalid && new_result.detail.$touched">
+                            Debes ingresar la frase resultado o el caos de la idea
+                        </span>
                     </div>
                 </div>
                 <div class="col-md-12">
@@ -108,10 +116,14 @@
                 <button class="btn btn-default" ng-click="vm.toggleTabResultOption(0)">
                     <span class="glyphicon glyphicon-th-list"></span> Histórico
                 </button>
-                <button class="btn btn-default" ng-click="vm.toggleTabResultOption(1)">
+                <button class="btn btn-default" 
+                        ng-class="!vm.update_result_phrase.detail && vm.update_result_phrase.chaos? 'btn-warning':'btn-default'" 
+                        ng-click="vm.toggleTabResultOption(1)">
                     <span class="glyphicon glyphicon-check"></span> Editar
                 </button>
-                <button class="btn btn-default" ng-click="vm.toggleTabResultOption(2)"
+                <button class="btn" 
+                        ng-class="!vm.new_result_phrase.deviation? 'btn-default':'btn-warning'" 
+                        ng-click="vm.toggleTabResultOption(2)"
                         ng-disabled="!vm.result_phrases.length">
                     <span class="glyphicon glyphicon-random"></span> Desvío
                 </button>
@@ -184,14 +196,18 @@
                     <th>Fecha</th>
                     <th>Frase resultado</th>
                     <th>Caos de la idea</th>
+                    <th>Desvío</th>
                     <th></th>
                 </tr>
                 <tr ng-repeat="phrase in vm.result_phrases">
                     <td>{{ phrase.created_at }}</td>
                     <td>{{ phrase.detail }}</td>
                     <td>{{ phrase.chaos }}</td>
+                    <td>{{ phrase.deviation }}</td>
                     <td>
-                        <button class="btn btn-danger btn-xs btn-delete" title="Eliminar">
+                        <button class="btn btn-danger btn-xs btn-delete" title="Eliminar"
+                                ng-click="vm.deleteResultPhrase(phrase.id)"
+                                ng-disabled="vm.btn_waiting_delete_result_phrase">
                             <span class="glyphicon glyphicon-trash"></span>
                         </button>
                     </td>
@@ -205,18 +221,6 @@
             <form name="update_result_phrase" ng-submit="vm.updateResultPhrase()">
                 <div class="col-md-5 col-md-offset-1 text-center">
                     <div class="form-group">
-                        <label>Frase resultado</label>
-                        <textarea class="form-control textarea__medium" name="detail" placeholder="Recuerde considerar que el resultado debe ser: Conmensurable (Que se pueda Medir), Imposible (no logrado por los medios que usualmente dispone), Denso (Tangible)  Convergente (Que integre)"
-                                  ng-model="vm.update_result_phrase.detail"
-                                  ng-required="!vm.update_result_phrase.chaos">
-                        </textarea>
-                        <span class="text-danger" ng-show="update_result_phrase.detail.$invalid && update_result_phrase.detail.$touched">
-                            Debes ingresar la frase resultado o el caos de la idea
-                        </span>
-                    </div>
-                </div>
-                <div class="col-md-5 text-center">
-                    <div class="form-group">
                         <label>Caos de la idea</label>
                         <textarea class="form-control textarea__medium" name="chaos" placeholder="Agregue el caos de la idea. Aquellas cosas que hacen o refieren a su resultado para luego escucharse y plantear una frase resultado"
                                   ng-model="vm.update_result_phrase.chaos"
@@ -227,10 +231,22 @@
                         </span>
                     </div>
                 </div>
+                <div class="col-md-5 text-center">
+                    <div class="form-group">
+                        <label>Frase resultado</label>
+                        <textarea class="form-control textarea__medium" name="detail" placeholder="Recuerde considerar que el resultado debe ser: Conmensurable (Que se pueda Medir), Imposible (no logrado por los medios que usualmente dispone), Denso (Tangible)  Convergente (Que integre)"
+                                  ng-model="vm.update_result_phrase.detail"
+                                  ng-required="!vm.update_result_phrase.chaos">
+                        </textarea>
+                        <span class="text-danger" ng-show="update_result_phrase.detail.$invalid && update_result_phrase.detail.$touched">
+                            Debes ingresar la frase resultado o el caos de la idea
+                        </span>
+                    </div>
+                </div>
                 <div class="col-md-6 col-md-offset-3 text-center">
                     <button type="button" class="btn btn-success btn-sm"
                             ng-click="vm.updateResultPhrase()"
-                            ng-disabled="new_result_phrase.$invalid || vm.btn_waiting_update_result_phrase">
+                            ng-disabled="update_result_phrase.$invalid || vm.btn_waiting_update_result_phrase">
                         <span class="glyphicon glyphicon-floppy-disk"></span> Guardar
                     </button>
                 </div>
@@ -245,24 +261,38 @@
                     <div class="form-group">
                         <label>Desvío</label>
                         <textarea class="form-control textarea__medium" name="detail" placeholder="Agregue lo que considera es un desvío en su frase"
-                                  ng-model="vm.new_result_phrase.deviation"></textarea>
+                                  ng-model="vm.new_result_phrase.deviation"
+                                  ng-required="!vm.new_result_phrase.chaos && !vm.new_result_phrase.detail"></textarea>
                         <span class="text-danger" ng-show="deviation.detail.$invalid && deviation.detail.$touched">
-                            El detalle del desvío es un campo obligatorio
+                            Debes ingresar un valor en alguno de los campos
                         </span>
                     </div>
                 </div>
                 <div class="col-md-4 text-center">
                     <div class="form-group">
                         <label>Caos de la idea</label>
-                        <textarea class="form-control textarea__medium" placeholder="Agregue el caos de la idea. Aquellas cosas que hacen o refieren a su resultado para luego escucharse y plantear una frase resultado"
-                                  ng-model="vm.new_result_phrase.chaos"></textarea>
+                        <textarea class="form-control textarea__medium" name="chaos" placeholder="Agregue el caos de la idea. Aquellas cosas que hacen o refieren a su resultado para luego escucharse y plantear una frase resultado"
+                                  ng-model="vm.new_result_phrase.chaos"
+                                  ng-required="!vm.new_result_phrase.deviation && !vm.new_result_phrase.detail"></textarea>
+                        <span class="text-danger" ng-show="deviation.chaos.$invalid && deviation.chaos.$touched">
+                            Debes ingresar un valor en alguno de los campos
+                        </span>
                     </div>
                 </div>
                 <div class="col-md-4 text-center">
                     <div class="form-group">
-                        <label>Frase resultado</label>
-                        <textarea class="form-control textarea__medium" placeholder="Recuerde considerar que el resultado debe ser: Conmensurable (Que se pueda Medir), Imposible (no logrado por los medios que usualmente dispone), Denso (Tangible)  Convergente (Que integre)"
-                                  ng-model="vm.new_result_phrase.detail"></textarea>
+                        <label>
+                            Frase resultado
+                            <button type="button" class="btn btn-default btn-xs" ng-click="vm.copyResultPhrase()" title="Copiar frase anterior">
+                                <span class="glyphicon glyphicon-duplicate"></span>
+                            </button>
+                        </label>
+                        <textarea class="form-control textarea__medium" name="phrase" placeholder="Recuerde considerar que el resultado debe ser: Conmensurable (Que se pueda Medir), Imposible (no logrado por los medios que usualmente dispone), Denso (Tangible)  Convergente (Que integre)"
+                                  ng-model="vm.new_result_phrase.detail"
+                                  ng-required="!vm.new_result_phrase.deviation && !vm.new_result_phrase.chaos"></textarea>
+                        <span class="text-danger" ng-show="deviation.phrase.$invalid && deviation.phrase.$touched">
+                            Debes ingresar un valor en alguno de los campos
+                        </span>
                     </div>
                 </div>
                 <div class="col-md-12 text-center">

@@ -123,7 +123,8 @@ class ResultPhraseController extends Controller
      */
     public function destroy($id)
     {
-        //
+        ResultPhrase::find($id)->delete();
+        return ['id' => $id];
     }
 
     public static function checkDuplicate($detail, $result_id = null) {

@@ -13,16 +13,18 @@
 
         // Bind variables
         vm.completeResult = completeResult;
+        vm.copyResultPhrase = copyResultPhrase;
+        vm.createBeyond = createBeyond;
+        vm.createDeviation = createDeviation;
+        vm.createFailed = createFailed;
+        vm.createMerge = createMerge;
         vm.createResult = createResult;
         vm.createResultPhrase = createResultPhrase;
         vm.createSadhana = createSadhana;
-        vm.createMerge = createMerge;
-        vm.createBeyond = createBeyond;
+        vm.deleteResultPhrase = deleteResultPhrase;
         vm.goToSteps = goToSteps;
         vm.goToPierce = goToPierce;
         vm.newResultPhraseIni = newResultPhraseIni;
-        vm.createFailed = createFailed;
-        vm.createDeviation = createDeviation;
         vm.selectResult = selectResult;
         vm.toggleFlagNewResult = toggleFlagNewResult;
         vm.toggleTabResultOption = toggleTabResultOption;
@@ -52,6 +54,7 @@
                     .catch(getResultsError);
                     
             function getResultsComplete(data , status, headers, config){
+                vm.last_results = 1000000;
                 return vm.results = data;
             }
             
@@ -68,7 +71,11 @@
         function toggleTabResultOption(value){
             vm.tab_result_option = (vm.tab_result_option === value)? 0 : value;
         }
-
+        
+        function copyResultPhrase(){
+            vm.new_result_phrase.detail = vm.result_selected.result_phrases[0].detail;
+        }
+        
         function createResult(){
             vm.btn_waiting_save_result = true;
 
@@ -111,6 +118,49 @@
                     vm.edit_result = {};
                     vm.btn_waiting_save_result = false;
                 }
+            }
+        }
+
+        function deleteResultPhrase(id){
+            vm.btn_waiting_delete_result_phrase = true;
+            if(vm.result_phrases.length === 1){
+                if(!confirm('Al eliminar esta frase, se elimina tambien el resultado. Desea continuar?')){
+                    return false;
+                }
+            }
+            
+            return resultService.deleteResultPhrase(id).$promise
+                    .then(deleteResultPhraseComplete)
+                    .catch(deleteResultPhraseError);
+            
+            function deleteResultPhraseComplete(data , status, headers, config){
+                vm.result_phrases = vm.result_phrases.filter(function(element) {
+                    return element.id != data.id;
+                });
+                
+                if(vm.result_phrases.length === 0){
+                    deleteResult(vm.result_selected.id);
+                }
+                vm.btn_waiting_delete_result_phrase = false;
+            }
+            function deleteResultPhraseError(error){
+                console.log(error);
+                vm.btn_waiting_delete_result_phrase = false;
+            }
+        }
+
+        function deleteResult(id){
+            return resultService.deleteResult(id).$promise
+                    .then(deleteResultComplete)
+                    .catch(deleteResultError);
+            
+            function deleteResultComplete(data , status, headers, config){
+                vm.results = vm.results.filter(function(element) {
+                    return element.id != data.id;
+                });
+            }
+            function deleteResultError(error){
+                console.log(error);
             }
         }
 
@@ -171,6 +221,7 @@
 
         function updateResultPhrase(){
             vm.btn_waiting_update_result_phrase = true;
+            console.log(vm.result_phrases);
             return resultService.updateResultPhrase(vm.update_result_phrase, vm.result_phrases[0].id).$promise
                     .then(updateResultPhraseComplete)
                     .catch(updateResultPhraseError);
@@ -308,22 +359,25 @@
             vm.result_phrase_chaos = '';
             vm.update_result_phrase = {};
             vm.new_result_phrase = {};
+            vm.result_selected.name = '';
 
             if(typeof(result_id) !== 'undefined') {
                 return resultService.getResult(result_id).$promise
                     .then(getResultComplete)
                     .catch(getResultError);
             }
-            else {
+            else if(vm.last_results){
                 return resultService.getResult(vm.last_results).$promise
                     .then(getResultComplete)
                     .catch(getResultError);
             }
+            else {
+                toggleFlagNewResult(true);
+            }
             
             function getResultComplete(data, status, headers, config){
                 vm.result_selected = data;
-                console.log(data);
-
+                
                 if(vm.result_selected.result_phrases.length > 0){
 
                     vm.result_phrases = vm.result_selected.result_phrases;

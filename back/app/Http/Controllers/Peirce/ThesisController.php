@@ -41,6 +41,8 @@ class ThesisController extends Controller
     public function store(Request $request)
     {
         $error = 1; 
+        Thesis::where('analysis_id', $request->input('analysis_id'))
+                    ->delete();
         foreach($request->input('thesis') as $quadrant_id => $detail){
             if($detail) {
                 Thesis::create(array(
