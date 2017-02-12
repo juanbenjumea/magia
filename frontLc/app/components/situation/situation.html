@@ -1,0 +1,114 @@
+<div class="row">
+    <div class="col-md-12 text-right">
+        <button id="btn-add" class="btn btn-default" ng-click="vm.backToHome()">
+            <span class="glyphicon glyphicon-chevron-left"></span> Volver al inicio
+        </button>
+    </div>
+</div>
+
+<div class="row row__highlight">
+    <div class="col-md-8 col-md-offset-2 text-center">
+        <h5>{{ vm.result.name }}</h5>
+    </div>
+    <div class="col-md-12 text-center">
+        <h3>{{ vm.result.result_phrases[0].detail }}</h3>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-10 col-md-offset-1 text-right">
+        <button class="btn btn-success"
+                ng-show="!vm.flag_new_situation"
+                ng-click="vm.flag_new_situation = true">
+            <span class="glyphicon glyphicon-plus"></span> Nueva situación
+        </button>
+    </div>
+    <div class="col-md-10 col-md-offset-1 text-center row__toogle"
+                ng-show="vm.flag_new_situation">
+        <form class="form-horizontal" name="situation"
+                ng-submit="vm.createSituation()">
+            <div class="row">
+                <div class="col-md-10 col-md-offset-1">
+                    <div class="new_line"></div>
+                    <div class="form-group">
+                        <label>Nombre</label>
+                        <input type="text" class="form-control" name="name" 
+                               ng-model="vm.new_situation.name"
+                               ng-required="true">
+                        <span class="text-danger" ng-show="situation.name.$invalid && situation.name.$touched">
+                            El nombre de la situación es un campo obligatorio
+                        </span>
+                    </div>
+                    <div class="form-group">
+                        <label>Detalle</label>
+                        <textarea type="text" class="form-control" name="detail" 
+                                  ng-model="vm.new_situation.detail"></textarea>
+                    </div>
+                    <button type="button" class="btn btn-default"
+                            ng-click="vm.flag_new_situation = false">
+                        <label class="glyphicon glyphicon-erase"></label> Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-success"
+                            ng-disabled="situation.$invalid || vm.btn_waiting_save_situation">
+                        <label class="glyphicon glyphicon-floppy-disk"></label> Guardar
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <div class="col-md-10 col-md-offset-1 text-center">
+        <div class="title">Situaciones</div>
+        <table class="table table-striped">
+            <tr>
+                <th></th>
+                <th>Fecha</th>
+                <th>Nombre</th>
+                <th>Detalle</th>
+                <th>Métodos</th>
+                <th></th>
+                <th></th>
+            </tr>
+            <tr ng-repeat="situation in vm.situations">
+                <td>
+                    <button class="btn btn-sm btn-detail" title="Situación no concluida"
+                            ng-hide="situation.solution.id"
+                            disabled
+                            >
+                        <span class="glyphicon glyphicon-ok-circle"></span>
+                    </button>
+                    <button class="btn btn-success btn-sm btn-detail" title="Situación concluida"
+                            ng-hide="!situation.solution.id"
+                            >
+                        <span class="glyphicon glyphicon-ok-circle"></span>
+                    </button>
+                </td>
+                <td>{{ situation.created_at }}</td>
+                <td>{{ situation.name }}</td>
+                <td>{{ situation.detail }}</td>
+                <td>
+                    <span ng-repeat="method in situation.methods">
+                        <button class="btn btn-xs btn-list"
+                                ng-class="method.id === vm.method_selected.id? 'btn-primary' : 'btn-default'">
+                            {{ method.name }}
+                        </button> 
+                    </span>
+                </td>
+                <td>
+                    <button class="btn btn-primary" 
+                            ng-click="vm.goToPierce(situation.id)">
+                        <span class="glyphicon glyphicon-check"></span> Analizar
+                    </button> 
+                </td>
+                <td>
+                    <button class="btn btn-xs btn-default" title="Editar">
+                        <span class="glyphicon glyphicon-pencil"></span>
+                    </button> 
+                    <button class="btn btn-xs btn-danger" title="Eliminar">
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </button> 
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

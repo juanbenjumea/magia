@@ -22,6 +22,7 @@ class ResultController extends Controller
     {
         $token = $request->input('token');
         $user = JWTAuth::toUser($token);
+
         // TODO_MAGIA: Filtrar los resultados por usuario
         return Result::with([   'result_phrases' => function ($query) {
                                     $query->orderBy('created_at', 'desc'); 
@@ -37,6 +38,11 @@ class ResultController extends Controller
                                 , 'sadhana_parent'    
                             ])
                         ->where('user_id', $user->id)
+                        ->where(function ($query) {
+                            $query->doesntHave('sadhana_parent')
+                                ->doesntHave('merge_parent')
+                                ->doesntHave('beyond_son');
+                        })
                         ->orderBy('created_at', 'desc')
                         ->take(10)
                         ->get();
@@ -100,7 +106,9 @@ class ResultController extends Controller
         return Result::with(['result_phrases' => function ($query) {
                                     $query->orderBy('created_at', 'desc'); 
                                 }
-                            , 'result_phrases.failed'
+                            , 'result_phrases.failed'  => function ($query) {
+                                    $query->orderBy('created_at', 'desc'); 
+                                }
                             , 'beyond_son'
                             , 'beyond_parent'
                             , 'merge_sons'
@@ -143,6 +151,9 @@ class ResultController extends Controller
                     'message' => 'Nombre de resultado duplicado'
                 ], 500);
             }
+        }
+        if($request->has('status_review')){
+            $result->status_review = $request->input('status_review');
         }
         if($request->has('completed')){
             $result->completed = $request->input('completed');

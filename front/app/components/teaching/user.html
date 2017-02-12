@@ -1,0 +1,29 @@
+<div class="row">
+    <div class="col-md-12 text-center">
+        <h1>Centro de enseñanza</h1>
+    </div>
+</div>
+<div class="new_line"></div>
+<div class="row">
+    <div class="col-md-12">
+        <table class="table table-striped">
+            <tr ng-repeat="item in vm.history_table">
+                <td>
+                    <span class="glyphicon glyphicon-{{ item.icon }}"></span>
+                </td>
+                <td>{{ item.time }}</td>
+                <td class="{{ item.class }}">{{ item.detail }}</td>
+                <td>
+                    <button type="button" class="btn btn-primary" ng-click="vm.modalComment(item.id, item.type)">
+                        <span class="glyphicon glyphicon-comment"></span>
+                    </button>
+                    <button type="button" class="btn" 
+                                ng-click="vm.updateNotification(item.id, item.type, item.notification)"
+                                ng-class="item.notification === 1 ? 'btn-success' : 'btn-default'">
+                        <span class="glyphicon glyphicon-hand-up"></span>
+                    </button>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

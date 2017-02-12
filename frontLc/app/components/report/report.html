@@ -1,0 +1,13 @@
+
+<div class="row" ng-repeat="result in vm.results">
+    <h4>{{ result.name }}</h4>
+    <table class="table table-striped">
+        <tr ng-repeat="phrase in result.result_phrases">
+            <td>{{ phrase.detail }}</td>
+            <td>
+                <strong ng-show="phrase.failed.length > 0">Fallidos</strong>
+                <div ng-repeat="failed in phrase.failed">{{ failed.detail }}</div>
+            </td>
+        </tr>
+    </table>
+</div>

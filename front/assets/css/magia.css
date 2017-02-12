@@ -2,6 +2,28 @@
     display:none !important
 }
 
+body{
+    background-color: #F7F4C5;
+}
+.footer {
+    background-color: #4D3F31;
+    border-top: none;
+    color: #F7F4C5;
+    padding: 50px;
+    margin-top: 80px;
+    text-align: center;
+}
+.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6{
+    color: #4D3F31;
+    font-family: 'Raleway', sans-serif;
+}
+.navbar-brand.logo-header{
+    padding: 12px 15px 8px 15px;
+}
+.navbar-brand.logo-header img{
+    height: 30px;
+}
+
 .padding_right {
     padding-right: 5px;
 }
@@ -46,7 +68,7 @@
 .row__highlight {
     background-color: #fff9ed;
     color: #9a0f0f;
-    padding: 20px;
+    padding: 10px;
     border: 1px #f1dcb1 solid;
 }
 
@@ -171,4 +193,20 @@
     text-decoration: underline;
     margin-top: 20px;
     margin-bottom: 10px;
+}
+
+.intro img {
+    max-width: 90%;
+    margin: 0 auto;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+@media (max-width: 900px) {
+
+    .intro-text {
+        text-align: left;
+    }
 }

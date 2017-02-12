@@ -1,0 +1,42 @@
+<div class="modal-header">
+    <h3 class="modal-title" id="modal-title">Nuevo resultado</h3>
+</div>
+<div class="modal-body" id="modal-body">
+    
+    <form name="form_result" class="form-horizontal" novalidate="">
+
+        <div class="form-group error">
+            <label for="result_name" class="col-sm-3 control-label">Nombre</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control has-error" id="result_name" name="name" placeholder="Nombre" value="{{ name }}" 
+                    ng-model="index.result.name" 
+                    ng-required="true">
+                <span class="text-danger" ng-show="form_result.name.$invalid && form_result.name.$touched">
+                    El nombre es un campo obligatorio
+                </span>
+            </div>
+        </div>
+
+        <div class="form-group error">
+            <label for="result_detail" class="col-sm-3 control-label">Frase resultado</label>
+            <div class="col-sm-9">
+                <textarea class="form-control has-error" id="result_detail" name="detail" placeholder="Frase resultado" 
+                    ng-model="index.result.detail" 
+                    ng-required="true">{{ detail }}</textarea>
+                <span class="text-danger" ng-show="form_result.detail.$invalid && form_result.detail.$touched">
+                    El detalle es un campo obligatorio
+                </span>
+            </div>
+        </div>
+        
+        <div class="form-group error">
+            <label for="result_chaos" class="col-sm-3 control-label">Caos de la idea</label>
+            <div class="col-sm-9">
+                <textarea class="form-control has-error" id="result_chaos" name="chaos" placeholder="Caos" 
+                    ng-model="index.result.chaos" 
+                    ng-required="true">{{ chaos }}</textarea>
+            </div>
+        </div>
+    </form>
+    
+</div>

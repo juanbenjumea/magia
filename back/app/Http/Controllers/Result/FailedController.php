@@ -39,10 +39,14 @@ class FailedController extends Controller
     public function store(Request $request)
     {
         $result_phrase_id = $request->input('result_phrase_id');
-        $detail = $request->input('detail');
+        $say = $request->input('say');
+        $said = $request->input('said');
+        $uncover = $request->input('uncover');
         $failed = Failed::create(array(
             'result_phrase_id' => $result_phrase_id,
-            'detail' => $detail
+            'say' => $say,
+            'said' => $said,
+            'uncover' => $uncover
         ));
 
         return $failed;
@@ -79,7 +83,15 @@ class FailedController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $failed = Failed::find($id);
+        if($request->has('status_review')){
+            $failed->status_review = $request->input('status_review');
+        }
+        else {
+            $failed->status_review = 0;
+        }
+        $failed->save();
+        return $failed;
     }
 
     /**

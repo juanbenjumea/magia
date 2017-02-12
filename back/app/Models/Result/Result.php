@@ -40,4 +40,8 @@ class Result extends Model {
     public function sadhana_parent() {
         return $this->belongsTo('\Magia\Models\Result\Result', 'result_sadhana_id', 'id');
     }
+    
+    public function comments() {
+        return $this->morphMany('\Magia\Models\Taching\Comment', 'element');
+    }
 }

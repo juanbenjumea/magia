@@ -10,5 +10,6 @@
             , 'app.report'
             , 'app.fwf'
             , 'app.steps'
+            , 'app.teaching'
         ]);
 })();

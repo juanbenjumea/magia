@@ -111,6 +111,12 @@ class ResultPhraseController extends Controller
         if($request->has('deviation')){
             $result_phrase->deviation = $request->input('deviation');
         }
+        if($request->has('status_review')){
+            $result_phrase->status_review = $request->input('status_review');
+        }
+        else {
+            $result_phrase->status_review = 0;
+        }
         $result_phrase->save();
         return $result_phrase;
     }

@@ -56,7 +56,7 @@
         }
 
         function completeResult(id) {
-            var result = {'completed' : 1}
+            var result = {'completed' : 1};
             var Result = $resource(API_URL + 'result/:id', {id : '@id'}, {'update': { method:'PUT' }});
             return Result.update({'id' : id}, result);
         }

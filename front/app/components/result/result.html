@@ -1,18 +1,86 @@
 <div class="row">
-    <div class="col-md-2 col-md-offset-6 text-right">
-        <label class="label_center">Resultados recientes: </label>
+    <div class="col-md-12 text-center">
+        <h1>Bienvenido al aplicativo Mauriga</h1>
     </div>
-    <div class="col-md-4" ng-show="vm.results">
-        <select class="form-control" ng-model="vm.last_results" ng-change="vm.selectResult()" ng-options="result.id as result.name for result in vm.results">
-            <option value="">Selecciona</option>
-        </select>
+</div>
+<div class="new_line"></div>
+<div class="row intro text-center">
+    <div class="col-md-2 col-md-offset-2">
+        <div class="row">
+            <div class="col-xs-3 col-md-12">
+                <img src="assets/images/icon_check.png">
+            </div>
+            <div class="col-xs-9 col-md-12 intro-text">
+                Selecciona tu resultado o crea uno nuevo
+            </div>
+        </div>
     </div>
-    <div class="col-md-4" ng-show="!vm.results">
-        <p class="text-info">
+    <div class="col-md-2">
+        <div class="row">
+            <div class="col-xs-3 col-md-12">
+                <img src="assets/images/icon_calendar.png">
+            </div>
+            <div class="col-xs-9 col-md-12 intro-text">
+                InBoca tu resultado cada día y documentalos
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="row">
+            <div class="col-xs-3 col-md-12">
+                <img src="assets/images/icon_time.png">
+            </div>
+            <div class="col-xs-9 col-md-12 intro-text">
+                Haz seguimiento histórico de tus anotaciones
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="row">
+            <div class="col-xs-3 col-md-12">
+                <img src="assets/images/icon_join.png">
+            </div>
+            <div class="col-xs-9 col-md-12 intro-text">
+                Analiza las situaciones según los diferentes métodos
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="new_line"></div>
+
+<div class="row">
+    <div class="col-md-6 col-md-offset-2 text-right">
+        <span>
+            <select class="form-control" 
+                    ng-show="vm.results"
+                    ng-model="vm.last_results" 
+                    ng-change="vm.selectResult()" 
+                    ng-options="result.id as result.name for result in vm.results">
+                <option value="">Selecciona</option>
+            </select>
+        </span>
+        <div class="text-left" ng-show="vm.result_selected.sadhana_sons.length > 1000">
+            <div class="row">
+                <div class="col-md-2"><strong>Sadhana</strong></div>
+                <div class="col-md-9">
+                    <select class="form-control"
+                            ng-model="vm.result_selected_sadhana_son" 
+                            ng-options="result.id as result.name for result in vm.result_selected.sadhana_sons"
+                            >
+                        <option value="">Selecciona</option>
+                    </select>
+                </div>
+                <div class="col-md-1">
+                    <button class="btn btn-default" ng-click="vm.selectResult(95)"><i class="glyphicon glyphicon-remove"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <span class="text-info" ng-show="!vm.results">
             <label class="label_center">Cargando...</label>
-        </p>
-    </div>
-    <div class="col-md-12 text-right">
+        </span>
         <button id="btn-add" class="btn btn-default">
             <span class="glyphicon glyphicon-list-alt"></span> Ver todos
         </button>
@@ -22,170 +90,172 @@
     </div>
 </div>
 
-<div class="row row__highlight">
-    <div class="row" ng-show="vm.flag_new_result">
-        <div class="col-md-8 col-md-offset-2 text-center">
-            <form class="form-horizontal" name="new_result" ng-submit="vm.createResult()">
-                <div class="col-md-12">
-                    <div class="form-group">
-                        <label for="new_result_name">Título</label>
-                        <input class="form-control text-center" name="name" id="new_result_name" type="text" 
-                               placeholder="Título con el que identificará la frase resultado" 
-                               ng-model="vm.new_result.name"
-                               ng-required="true">
-                        <span class="text-danger" ng-show="new_result.name.$invalid && new_result.name.$touched">
-                            El Título es un campo obligatorio
-                        </span>
-                    </div>
+<div class="row row__highlight" ng-show="vm.flag_new_result">
+    <div class="col-md-8 col-md-offset-2 text-center">
+        <form class="form-horizontal" name="new_result" ng-submit="vm.createResult()">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label for="new_result_name">Título</label>
+                    <input class="form-control text-center" name="name" id="new_result_name" type="text" 
+                           placeholder="Título con el que identificará la frase resultado" 
+                           ng-model="vm.new_result.name"
+                           ng-required="true">
+                    <span class="text-danger" ng-show="new_result.name.$invalid && new_result.name.$touched">
+                        El Título es un campo obligatorio
+                    </span>
                 </div>
-                <div class="col-md-6">
-                    <div class="form-group padding_right">
-                        <label for="new_result_chaos">
-                            Caos de la idea
-                        </label>
-                        <textarea class="form-control textarea__large" name="chaos" id="new_result_chaos"
-                                ng-model="vm.new_result.chaos"
-                                ng-required="!vm.new_result.detail"
-                                placeholder="Agregue el caos de la idea. Aquellas cosas que hacen o refieren a su resultado para luego escucharse y plantear una frase resultado"></textarea>
-                        <span class="text-danger" ng-show="new_result.chaos.$invalid && new_result.chaos.$touched">
-                            Debes ingresar la frase resultado o el caos de la idea
-                        </span>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group padding_left">
-                        <label for="new_result_detail">
-                            Frase resultado
-                        </label>
-                        <textarea class="form-control textarea__large" name="detail" id="new_result_detail"
-                                ng-model="vm.new_result.detail"
-                                ng-required="!vm.new_result.chaos"
-                                placeholder="Recuerde considerar que el resultado debe ser: Conmensurable (Que se pueda Medir), Imposible (no logrado por los medios que usualmente dispone), Denso (Tangible)  Convergente (Que integre)"></textarea>
-                        <span class="text-danger" ng-show="new_result.detail.$invalid && new_result.detail.$touched">
-                            Debes ingresar la frase resultado o el caos de la idea
-                        </span>
-                    </div>
-                </div>
-                <div class="col-md-12">
-                    <button type="submit" class="btn btn-success" 
-                            ng-disabled="new_result.$invalid || vm.btn_waiting_save_result">
-                        <span class="glyphicon glyphicon-floppy-disk"></span> Guardar
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-    <div ng-show="!vm.flag_new_result">
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <div class="col-md-8 col-md-offset-2 text-center" ng-show="vm.flag_edit_result">
-                    <label>{{ vm.result_selected.name }}</label>
-                    <form class="form-horizontal" name="edit_result" ng-submit="vm.updateResult()">
-                        <div class="form-group">
-                            <input type="text" class="form-control" ng-model="vm.edit_result.name">
-                        </div>
-                        <button type="button" class="btn btn-default btn-xs" title="Deshacer"
-                                ng-click="vm.flag_edit_result = false">
-                            <span class="glyphicon glyphicon-erase"></span>
-                        </button>
-                        <button type="submit" class="btn btn-success btn-xs" title="Guardar"
-                                ng-click="vm.flag_edit_result = false">
-                            <span class="glyphicon glyphicon-floppy-disk"></span>
-                        </button>
-                    </form>
-                </div>
-                <h5 ng-show="!vm.flag_edit_result">
-                    {{ vm.result_selected.name }}
-                    <button type="button" class="btn btn-default btn-xs" title="Editar"
-                                ng-click="vm.flag_edit_result = true">
-                        <span class="glyphicon glyphicon-pencil"></span>
-                    </button>
-                </h5>
             </div>
-            <div class="col-md-12 text-center">
-                <h3>{{ vm.update_result_phrase.detail }}</h3>
+            <div class="col-md-6">
+                <div class="form-group padding_right">
+                    <label for="new_result_chaos">
+                        Caos de la idea
+                    </label>
+                    <textarea class="form-control textarea__large" name="chaos" id="new_result_chaos"
+                            ng-model="vm.new_result.chaos"
+                            ng-required="!vm.new_result.detail"
+                            placeholder="Agregue el caos de la idea. Aquellas cosas que hacen o refieren a su resultado para luego escucharse y plantear una frase resultado"></textarea>
+                    <span class="text-danger" ng-show="new_result.chaos.$invalid && new_result.chaos.$touched">
+                        Debes ingresar la frase resultado o el caos de la idea
+                    </span>
+                </div>
             </div>
-        </div>
+            <div class="col-md-6">
+                <div class="form-group padding_left">
+                    <label for="new_result_detail">
+                        Frase resultado
+                    </label>
+                    <textarea class="form-control textarea__large" name="detail" id="new_result_detail"
+                            ng-model="vm.new_result.detail"
+                            ng-required="!vm.new_result.chaos"
+                            placeholder="Recuerde considerar que el resultado debe ser: Conmensurable (Que se pueda Medir), Imposible (no logrado por los medios que usualmente dispone), Denso (Tangible)  Convergente (Que integre)"></textarea>
+                    <span class="text-danger" ng-show="new_result.detail.$invalid && new_result.detail.$touched">
+                        Debes ingresar la frase resultado o el caos de la idea
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <button type="submit" class="btn btn-success" 
+                        ng-disabled="new_result.$invalid || vm.btn_waiting_save_result">
+                    <span class="glyphicon glyphicon-floppy-disk"></span> Guardar
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
-<div ng-show="!vm.flag_new_result">
-    <div class="row">
-        <div class="col-md-12 text-center">
-            <div class="btn-group" role="group">
-                <button class="btn btn-default" ng-click="vm.toggleTabResultOption(0)">
-                    <span class="glyphicon glyphicon-th-list"></span> Histórico
-                </button>
-                <button class="btn btn-default" 
-                        ng-class="!vm.update_result_phrase.detail && vm.update_result_phrase.chaos? 'btn-warning':'btn-default'" 
-                        ng-click="vm.toggleTabResultOption(1)">
-                    <span class="glyphicon glyphicon-check"></span> Editar
-                </button>
-                <button class="btn" 
-                        ng-class="!vm.new_result_phrase.deviation? 'btn-default':'btn-warning'" 
-                        ng-click="vm.toggleTabResultOption(2)"
-                        ng-disabled="!vm.result_phrases.length">
-                    <span class="glyphicon glyphicon-random"></span> Desvío
-                </button>
-                <button class="btn btn-default" ng-click="vm.toggleTabResultOption(3)"
-                        ng-disabled="!vm.result_phrases.length">
-                    <span class="glyphicon glyphicon-warning-sign"></span> Fallido
-                </button>
-                <button class="btn btn-default" ng-click="vm.toggleTabResultOption(4)">
-                    <span class="glyphicon glyphicon-link"></span> Integrar
-                </button>
-                <div class="btn-group" role="group">
-                    <button class="btn btn-default dropdown-toggle" type="button" 
-                            ng-disabled="!vm.result_phrases.length"
-                            data-toggle="dropdown">
-                        <span class="glyphicon glyphicon-eye-open"></span> Analizar
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                        <li>
-                            <a href="" id="btn-peirce" ng-click="vm.goToPierce()">
-                                <span class="glyphicon glyphicon-certificate"></span> Peirce
-                            </a>
-                        </li>
-                        <li>
-                            <a href="" ng-click="vm.goToSteps()">
-                                <span class="glyphicon glyphicon-sort"></span> 11 pasos
-                            </a>
-                        </li>
-                        <li>
-                            <a>
-                                <span class="glyphicon glyphicon-tasks"></span> 3 registros
-                            </a>
-                        </li>
-                        <li>
-                            <a>
-                                <span class="glyphicon glyphicon-th-large"></span> 4 discursos
-                            </a>
-                        </li>
-                        <li>
-                            <a>
-                                <span class="glyphicon glyphicon-triangle-top"></span> Rhen
-                            </a>
-                        </li>
-                        <li>
-                            <a>
-                                <span class="glyphicon glyphicon-refresh"></span> Wu wei
-                            </a>
-                        </li>
-                        <li>
-                            <a>
-                                <span class="glyphicon glyphicon-check"></span> Sutilización
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <button class="btn btn-primary" 
-                    ng-click="vm.completeResult()">
-                <span class="glyphicon glyphicon-star"></span> Logrado
-            </button>
-        </div>
+<div class="row row__highlight" ng-show="vm.flag_selected_result">
+    <div class="col-md-12">
+        <strong>Frase resultado: </strong>
+        <h3>{{ vm.result_selected.result_phrases[0].detail || "'Debe ingresar una Frase Resultado en la sección Editar'"}}</h3>
     </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12 text-center">
+        <div class="btn-group" role="group">
+            <button class="btn btn-default" 
+                    ng-disabled="!vm.flag_selected_result"
+                    ng-click="vm.toggleTabResultOption(0); vm.historyTable()"
+                    >
+                <span class="glyphicon glyphicon-th-list"></span> Histórico
+            </button>
+            <button class="btn btn-default" 
+                    ng-disabled="!vm.flag_selected_result"
+                    ng-class="!vm.update_result_phrase.detail && vm.update_result_phrase.chaos? 'btn-warning':'btn-default'" 
+                    ng-click="vm.toggleTabResultOption(1)">
+                <span class="glyphicon glyphicon-check"></span> Editar
+            </button>
+            <button class="btn" 
+                    ng-disabled="!vm.flag_selected_result"
+                    ng-class="!vm.new_result_phrase.deviation? 'btn-default':'btn-warning'" 
+                    ng-click="vm.toggleTabResultOption(2)">
+                <span class="glyphicon glyphicon-random"></span> Desvío
+            </button>
+            <button class="btn btn-default" 
+                    ng-disabled="!vm.flag_selected_result"
+                    ng-click="vm.toggleTabResultOption(3)">
+                <span class="glyphicon glyphicon-warning-sign"></span> Fallido
+            </button>
+            <div class="btn-group" role="group">
+                <button class="btn btn-default dropdown-toggle" type="button" 
+                        ng-disabled="!vm.flag_selected_result"
+                        data-toggle="dropdown">
+                    <span class="glyphicon glyphicon-link"></span> Integrar
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                    <li>
+                        <a href="" ng-click="vm.toggleTabResultOption(4); vm.toggleTabIntegration(1)">
+                            <span>Más allá del resultado</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="" ng-click="vm.toggleTabResultOption(4); vm.toggleTabIntegration(2)">
+                            <span>Sadhana</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="" ng-click="vm.toggleTabResultOption(4); vm.toggleTabIntegration(3)">
+                            <span>Unificar</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="btn-group" role="group">
+                <button class="btn btn-default dropdown-toggle" type="button" 
+                        ng-disabled="!vm.flag_selected_result"
+                        data-toggle="dropdown">
+                    <span class="glyphicon glyphicon-eye-open"></span> Analizar
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                    <li>
+                        <a href="" id="btn-peirce" ng-click="vm.goToPierce()">
+                            <span class="glyphicon glyphicon-certificate"></span> Peirce
+                        </a>
+                    </li>
+                    <li>
+                        <a href="" ng-click="vm.goToSteps()">
+                            <span class="glyphicon glyphicon-sort"></span> 11 pasos
+                        </a>
+                    </li>
+                    <li>
+                        <a>
+                            <span class="glyphicon glyphicon-tasks"></span> 3 registros
+                        </a>
+                    </li>
+                    <li>
+                        <a>
+                            <span class="glyphicon glyphicon-th-large"></span> 4 discursos
+                        </a>
+                    </li>
+                    <li>
+                        <a>
+                            <span class="glyphicon glyphicon-triangle-top"></span> Rhen
+                        </a>
+                    </li>
+                    <li>
+                        <a>
+                            <span class="glyphicon glyphicon-refresh"></span> Wu wei
+                        </a>
+                    </li>
+                    <li>
+                        <a>
+                            <span class="glyphicon glyphicon-check"></span> Sutilización
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <button class="btn btn-primary" 
+                ng-disabled="!vm.flag_new_result"
+                ng-click="vm.completeResult()">
+            <span class="glyphicon glyphicon-star"></span> Logrado
+        </button>
+    </div>
+</div>
+
+<div ng-show="vm.flag_selected_result">
 
     <div class="new_line_sm"></div>
 
@@ -193,20 +263,24 @@
         <div class="col-md-12">
             <table class="table table-striped">
                 <tr>
-                    <th>Fecha</th>
-                    <th>Frase resultado</th>
-                    <th>Caos de la idea</th>
-                    <th>Desvío</th>
-                    <th></th>
+                    <th colspan="3">{{ vm.result_selected.name }}</th>
+                    <th>
+                        <button class="btn btn-danger btn-xs btn-delete" title="Eliminar"
+                                ng-click="vm.deleteResult(vm.result_selected.id)"
+                                >
+                            <span class="glyphicon glyphicon-trash"></span>
+                        </button>
+                    </th>
                 </tr>
-                <tr ng-repeat="phrase in vm.result_phrases">
-                    <td>{{ phrase.created_at }}</td>
-                    <td>{{ phrase.detail }}</td>
-                    <td>{{ phrase.chaos }}</td>
-                    <td>{{ phrase.deviation }}</td>
+                <tr ng-repeat="item in vm.history_table">
+                    <td>
+                        <span class="glyphicon glyphicon-{{ item.icon }}"></span>
+                    </td>
+                    <td>{{ item.time }}</td>
+                    <td class="{{ item.class }}">{{ item.detail }}</td>
                     <td>
                         <button class="btn btn-danger btn-xs btn-delete" title="Eliminar"
-                                ng-click="vm.deleteResultPhrase(phrase.id)"
+                                ng-click="vm.deleteHistoryItem(item.type, item.id)"
                                 ng-disabled="vm.btn_waiting_delete_result_phrase">
                             <span class="glyphicon glyphicon-trash"></span>
                         </button>
@@ -306,16 +380,42 @@
     </div>
 
     <div class="row" ng-show="vm.tab_result_option == 3">
-        <div class="col-md-8 col-md-offset-2 text-center">
+        <div class="col-md-10 col-md-offset-1 text-center">
             <form name="failed" ng-submit="vm.createFailed()">
-                <div class="form-group">
-                    <label>Fallido</label>
-                    <textarea class="form-control" name="detail" placeholder="Agregue el fallido que generó en su invocación (la diferencia entre fallido y desvio es que el desvío es algo que aun esta en la frase y el fallido algo que dije o un Como lo dije que no esta en la frase)"
-                              ng-model="vm.new_failed.detail"
-                              ng-required="true"></textarea>
-                    <span class="text-danger" ng-show="failed.detail.$invalid && failed.detail.$touched">
-                        El detalle del fallido es un campo obligatorio
-                    </span>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>A decir</label>
+                            <textarea class="form-control" name="say" placeholder="Agregue lo que Debía 'Decir' en su Frase Resultado cuando ocurrió el Fallido ddunarte su inBocación."
+                                      ng-model="vm.new_failed.say"
+                                      ng-required="!vm.new_failed.said && !vm.new_failed.uncover"></textarea>
+                            <span class="text-danger" ng-show="failed.say.$invalid && failed.say.$touched">
+                                El detalle del fallido es un campo obligatorio
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Lo dicho</label>
+                            <textarea class="form-control" name="said" placeholder="Agregue lo 'Dicho' cuando ocurrió el Fallido de su inBocación."
+                                      ng-model="vm.new_failed.said"
+                                      ng-required="!vm.new_failed.say && !vm.new_failed.uncover"></textarea>
+                            <span class="text-danger" ng-show="failed.said.$invalid && failed.said.$touched">
+                                El detalle del fallido es un campo obligatorio
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Lo que desoculto</label>
+                            <textarea class="form-control textarea__large" name="uncover" placeholder="Agregue aquello que desoculta en lo dicho del fallido, o si fué un olvido o casualidad detonada en el momento de inBocar la frase."
+                                      ng-model="vm.new_failed.uncover"
+                                      ng-required="!vm.new_failed.say && !vm.new_failed.said"></textarea>
+                            <span class="text-danger" ng-show="failed.uncover.$invalid && failed.uncover.$touched">
+                                El detalle del fallido es un campo obligatorio
+                            </span>
+                        </div>
+                    </div>
                 </div>
                 <button type="submit" class="btn btn-success btn-sm"
                         ng-disabled="failed.$invalid || vm.btn_waiting_save_failed">
@@ -329,12 +429,16 @@
             <table class="table table-striped">
                 <tr>
                     <th>Fecha</th>
-                    <th>Fallido</th>
+                    <th>A decir</th>
+                    <th>Lo dicho</th>
+                    <th>Lo que desoculto</th>
                     <th></th>
                 </tr>
                 <tr ng-repeat="fail in vm.result_phrases[0].failed">
                     <td>{{ fail.created_at }}</td>
-                    <td>{{ fail.detail }}</td>
+                    <td>{{ fail.say }}</td>
+                    <td>{{ fail.said }}</td>
+                    <td>{{ fail.uncover }}</td>
                     <td>
                         <button class="btn btn-default btn-xs btn-detail" title="Editar">
                             <span class="glyphicon glyphicon-pencil"></span>
@@ -350,14 +454,16 @@
     
     <div class="row" ng-show="vm.tab_result_option == 4">
 
-        <div class="col-md-12">
+        <div class="col-md-12" ng-show="vm.integration_type == 1">
             <div class="panel panel-default">
                 <div class="panel-heading">Mas allá del resultado</div>
                 <div class="panel-body">
+                    Seleccione el Mas alla del Resultado al que se dirige y el Resultado Logrado.
                     <div class="row text-left">
                         <form class="form-inline" ng-submit="vm.createBeyond()">
                             <div class="col-md-12">
                                 <div class="form-group">
+                                    <label>Resultado logrado</label>
                                     <select class="form-control" name="parent"
                                             ng-model="vm.new_beyond.parent"
                                             required>
@@ -372,6 +478,7 @@
                                     <span class="glyphicon glyphicon-chevron-right"></span>
                                 </div>
                                 <div class="form-group">
+                                    <label>Más allá del resultado</label>
                                     <select class="form-control" name="son"
                                             ng-model="vm.new_beyond.son"
                                             required>
@@ -394,24 +501,13 @@
                         <hr>
                         <div class="col-md-12">
                             <div class="tree tree__branch_0">
-                                <span ng-show="vm.result_selected.beyond_parent">
-                                    {{ vm.result_selected.beyond_parent.name }}
-                                </span>
-                                <span class="text-muted"
-                                            ng-show="!vm.result_selected.beyond_parent">
-                                    No hay resultado padre
-                                </span>
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="tree tree__branch_1">
                                 <span class="glyphicon glyphicon-map-marker"></span>
                                 <span class="text-danger">{{ vm.result_selected.name }}</span>
                             </div>
                         </div>
                         <div class="col-md-12">
-                            <div class="tree tree__branch_2" ng-show="vm.result_selected.beyond_son">
-                                    {{ vm.result_selected.beyond_son.name }}
+                            <div class="tree tree__branch_1" ng-show="vm.result_selected.beyond_son">
+                                {{ vm.result_selected.beyond_son.name }}
                             </div>
                         </div>
                     </div>
@@ -419,14 +515,16 @@
             </div>
         </div>
 
-        <div class="col-md-12">
+        <div class="col-md-12" ng-show="vm.integration_type == 2">
             <div class="panel panel-default">
                 <div class="panel-heading">Sadhana</div>
                 <div class="panel-body">
+                    Seleccione un resultado superior y agregue hasta 4 resultados a integrar
                     <div class="row text-left">
                         <form class="form-inline" ng-submit="vm.createSadhana()">
                             <div class="col-md-12">
                                 <div class="form-group">
+                                    <label>Resultado superior</label>
                                     <select class="form-control" ng-model="vm.new_sadhana.parent">
                                         <option value="{{ result.id }}" 
                                                 ng-repeat="result in vm.results"
@@ -439,6 +537,7 @@
                                     <span class="glyphicon glyphicon-chevron-right"></span>
                                 </div>
                                 <div class="form-group">
+                                    <label>Sub-resultado</label>
                                     <select class="form-control" ng-model="vm.new_sadhana.son">
                                         <option value="{{ result.id }}" 
                                                 ng-repeat="result in vm.results"
@@ -459,29 +558,19 @@
                         <hr>
                         <div class="col-md-12">
                             <div class="tree tree__branch_0">
-                                <span ng-show="vm.result_selected.sadhana_parent">
-                                    {{ vm.result_selected.sadhana_parent.name }}
-                                </span>
-                                <span class="text-muted"
-                                            ng-show="!vm.result_selected.sadhana_parent">
-                                    No hay resultado padre
-                                </span>
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="tree tree__branch_1">
                                 <span class="glyphicon glyphicon-map-marker"></span>
                                 <span class="text-danger">{{ vm.result_selected.name }}</span>
                             </div>
                         </div>
                         <div class="col-md-12">
-                            <div class="tree tree__branch_2"
+                            <div class="tree tree__branch_1"
                                     ng-repeat="sadhana_son in vm.result_selected.sadhana_sons"
                                     ng-show="vm.result_selected.sadhana_sons.length">
                                 {{ sadhana_son.name }}
                             </div>
-                            <div class="tree tree__branch_2 text-muted"
+                            <div class="text-muted"
                                     ng-show="vm.result_selected.sadhana_sons.length < 4">
+                                <br>
                                 Puedes agregar {{ 4 - vm.result_selected.sadhana_sons.length }} resultados más
                             </div>
                         </div>
@@ -499,14 +588,16 @@
             </div>
         </div>
         
-        <div class="col-md-12">
+        <div class="col-md-12" ng-show="vm.integration_type == 3">
             <div class="panel panel-default">
                 <div class="panel-heading">Unificación</div>
                 <div class="panel-body">
+                    Seleccione un resultado superior y agregue hasta 4 resultados a integrar
                     <div class="row text-left">
                         <form class="form-inline" ng-submit="vm.createMerge()">
                             <div class="col-md-12">
                                 <div class="form-group">
+                                    <label>Resultado superior</label>
                                     <select class="form-control" name="parent"
                                             ng-model="vm.new_merge.parent"
                                             ng-required="true">
@@ -521,6 +612,7 @@
                                     <span class="glyphicon glyphicon-chevron-right"></span>
                                 </div>
                                 <div class="form-group">
+                                    <label>Sub-resultado</label>
                                     <select class="form-control" name="son"
                                             ng-model="vm.new_merge.son"
                                             ng-required="true">
@@ -543,29 +635,19 @@
                         <hr>
                         <div class="col-md-12">
                             <div class="tree tree__branch_0">
-                                <span ng-show="vm.result_selected.merge_parent">
-                                    {{ vm.result_selected.merge_parent.name }}
-                                </span>
-                                <span class="text-muted"
-                                            ng-show="!vm.result_selected.merge_parent">
-                                    No hay resultado padre
-                                </span>
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="tree tree__branch_1">
                                 <span class="glyphicon glyphicon-map-marker"></span>
                                 <span class="text-danger">{{ vm.result_selected.name }}</span>
                             </div>
                         </div>
                         <div class="col-md-12">
-                            <div class="tree tree__branch_2"
+                            <div class="tree tree__branch_1"
                                     ng-repeat="merge_son in vm.result_selected.merge_sons"
                                     ng-show="vm.result_selected.merge_sons.length">
                                     {{ merge_son.name }}
                             </div>
-                            <div class="tree tree__branch_2 text-muted"
+                            <div class="text-muted"
                                     ng-show="vm.result_selected.merge_sons.length < 4">
+                                <br>
                                 Puedes agregar {{ 4 - vm.result_selected.merge_sons.length }} resultados más
                             </div>
                         </div>

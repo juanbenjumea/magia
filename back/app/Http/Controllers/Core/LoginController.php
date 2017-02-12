@@ -35,6 +35,10 @@ class LoginController extends Controller
         
         $data = array_merge($user_data, ['token' => $token]);
 
+        $user_session = User::find($user->id);
+        $user_session->last_login = date('Y-m-d H:i:s');
+        $user_session->save();
+
         return response()->json($data);
     }
     

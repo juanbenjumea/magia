@@ -21,18 +21,24 @@
         vm.createResult = createResult;
         vm.createResultPhrase = createResultPhrase;
         vm.createSadhana = createSadhana;
+        vm.deleteResult = deleteResult;
         vm.deleteResultPhrase = deleteResultPhrase;
+        vm.deleteHistoryItem = deleteHistoryItem;
         vm.goToSteps = goToSteps;
         vm.goToPierce = goToPierce;
+        vm.historyTable = historyTable;
         vm.newResultPhraseIni = newResultPhraseIni;
         vm.selectResult = selectResult;
         vm.toggleFlagNewResult = toggleFlagNewResult;
         vm.toggleTabResultOption = toggleTabResultOption;
+        vm.toggleTabIntegration = toggleTabIntegration;
         vm.updateResult = updateResult;
         vm.updateResultPhrase = updateResultPhrase;
 
-        vm.flag_new_result = true;
+        vm.flag_new_result = false;
         vm.flag_edit_result = false;
+        vm.flag_selected_result = false;
+        vm.history_table = [];
         vm.integration_types = [];
         vm.new_result = {};
         vm.new_result_phrase = {};
@@ -41,7 +47,7 @@
         vm.new_merge = {};
         vm.result_phrases = {};
         vm.result_selected = {};
-        
+
         activate();
 
         function activate(){
@@ -55,6 +61,7 @@
                     
             function getResultsComplete(data , status, headers, config){
                 vm.last_results = 1000000;
+                console.log(data);
                 return vm.results = data;
             }
             
@@ -66,10 +73,16 @@
         function toggleFlagNewResult(value){
             vm.flag_new_result = value;
             vm.last_results = 0;
+            vm.flag_selected_result = false;
+        }
+
+        function toggleTabResultOption(value){
+            //vm.tab_result_option = (vm.tab_result_option === value)? 0 : value;
+            vm.tab_result_option = value;
         }
         
-        function toggleTabResultOption(value){
-            vm.tab_result_option = (vm.tab_result_option === value)? 0 : value;
+        function toggleTabIntegration(type){
+            vm.integration_type = type;
         }
         
         function copyResultPhrase(){
@@ -120,6 +133,22 @@
                 }
             }
         }
+        
+        function deleteHistoryItem(type, id){
+            console.log(type+' - '+id);
+            
+            switch(type){
+                case 'ph':
+                    vm.deleteResultPhrase(id);
+                    break;
+                case 'ch':
+                    break;
+                case 'dv':
+                    break;
+                case 'fl':
+                    break;
+            }
+        }
 
         function deleteResultPhrase(id){
             vm.btn_waiting_delete_result_phrase = true;
@@ -142,6 +171,7 @@
                     deleteResult(vm.result_selected.id);
                 }
                 vm.btn_waiting_delete_result_phrase = false;
+                vm.historyTable();
             }
             function deleteResultPhraseError(error){
                 console.log(error);
@@ -150,6 +180,7 @@
         }
 
         function deleteResult(id){
+
             return resultService.deleteResult(id).$promise
                     .then(deleteResultComplete)
                     .catch(deleteResultError);
@@ -221,7 +252,7 @@
 
         function updateResultPhrase(){
             vm.btn_waiting_update_result_phrase = true;
-            console.log(vm.result_phrases);
+
             return resultService.updateResultPhrase(vm.update_result_phrase, vm.result_phrases[0].id).$promise
                     .then(updateResultPhraseComplete)
                     .catch(updateResultPhraseError);
@@ -354,12 +385,13 @@
             // pues cuando se crea información no se está está asociando al array que hay en el value
 
             vm.flag_new_result = false;
-            //vm.tab_result_option = 0;
+            vm.flag_selected_result = false;
             vm.result_phrase_detail = '';
             vm.result_phrase_chaos = '';
             vm.update_result_phrase = {};
             vm.new_result_phrase = {};
             vm.result_selected.name = '';
+            vm.history_table = [];
 
             if(typeof(result_id) !== 'undefined') {
                 return resultService.getResult(result_id).$promise
@@ -371,13 +403,10 @@
                     .then(getResultComplete)
                     .catch(getResultError);
             }
-            else {
-                toggleFlagNewResult(true);
-            }
-            
+
             function getResultComplete(data, status, headers, config){
                 vm.result_selected = data;
-                
+                vm.flag_selected_result = true;
                 if(vm.result_selected.result_phrases.length > 0){
 
                     vm.result_phrases = vm.result_selected.result_phrases;
@@ -396,6 +425,59 @@
             function getResultError(error){
                 console.log(error);
             }
+        }
+
+        function historyTable(){
+            vm.history_table = [];
+            
+            var detail = '';
+            angular.forEach(vm.result_phrases, function(value, key) {
+                if(value.detail){
+                    vm.history_table.push({
+                                            'id' : value.id, 
+                                            'type' : 'ph', 
+                                            'time' : value.created_at, 
+                                            'detail' : value.detail, 
+                                            'icon' :'star-empty', 
+                                            'class' :'bold',
+                                            'delete' : 'deleteResultPhrase'
+                                        });
+                }
+                if(value.chaos){
+                    vm.history_table.push({
+                                            'id' : value.id, 
+                                            'type' : 'ch', 
+                                            'time' : value.created_at, 
+                                            'detail' : value.chaos, 
+                                            'icon' : 'cloud', 
+                                            'class' : '',
+                                            'delete' : 'deleteChaos'
+                                        });
+                }
+                if(value.deviation){
+                    vm.history_table.push({
+                                            'id' : value.id, 
+                                            'type' : 'dv', 
+                                            'time' : value.created_at, 
+                                            'detail' : value.deviation, 
+                                            'icon' : 'random', 
+                                            'class' : '',
+                                            'delete' : 'deleteDeviation'
+                                        });
+                }
+                angular.forEach(value.failed, function(val, k) {
+                    detail = 'A DECIR: '+val.say+'. LO DICHO: '+val.said+'. LO QUE DESOCULTO: '+val.uncover;
+                    vm.history_table.push({
+                                            'id' : val.id, 
+                                            'type' : 'fl', 
+                                            'time' : val.created_at, 
+                                            'detail' : detail, 
+                                            'icon' : 'warning-sign', 
+                                            'class' : '',
+                                            'delete' : 'deleteFailed'
+                                        });
+                });
+            });
         }
 
         function goToPierce(){

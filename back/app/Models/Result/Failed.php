@@ -9,10 +9,14 @@ class Failed extends Model {
 
     use SoftDeletes;
     protected $table = 'rs_failed';
-    protected $fillable = ['result_phrase_id', 'detail'];
+    protected $fillable = ['result_phrase_id', 'say', 'said', 'uncover'];
     protected $dates = ['created_at', 'updated_at', 'deleted_at'];
 
     public function result_phrase() {
         return $this->belongsTo('\Magia\Result\ResultPhrase', 'result_phrase_id', 'id');
+    }
+
+    public function comments() {
+        return $this->morphMany('\Magia\Models\Taching\Comment', 'element');
     }
 }

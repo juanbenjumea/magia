@@ -19,4 +19,8 @@ class ResultPhrase extends Model {
     public function failed() {
         return $this->hasMany('\Magia\Models\Result\Failed', 'result_phrase_id', 'id');
     }
+
+    public function comments() {
+        return $this->morphMany('\Magia\Models\Taching\Comment', 'element');
+    }
 }

@@ -1,0 +1,33 @@
+<div class="row">
+    <div class="col-md-12 text-center">
+        <h1>Centro de enseñanza</h1>
+    </div>
+    <div class="col-md-12">
+        No tienes comentarios disponibles
+    </div>
+</div>
+<div class="new_line"></div>
+<div class="row" ng-if="vm.users.length > 0">
+    <div class="col-md-12">
+        <table class="table table-striped">
+            <tr>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Última conexión</th>
+                <th></th>
+            </tr>
+            <tr ng-repeat="user in vm.users">
+                <td>
+                    <a ng-href="#/teaching/user/{{ user.id }}">
+                        {{ user.name+' '+user.last_name }}
+                    </a>
+                </td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.last_login }}</td>
+                <td>
+                    <span class="label" ng-class="user.notification === 1 ? 'label-success' : 'label-default'">!</span>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

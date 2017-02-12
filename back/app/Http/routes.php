@@ -34,6 +34,8 @@ Route::resource('logic-type', 'Peirce\LogicTypeController');
 Route::resource('hypothesis', 'Peirce\HypothesisController');
 Route::resource('thesis', 'Peirce\ThesisController');
 Route::resource('steps', 'Steps\StepsController');
+Route::resource('user', 'Core\UserController');
+Route::resource('comment', 'Teaching\CommentController');
 Route::auth();
 
 Route::get('/home', 'HomeController@index');

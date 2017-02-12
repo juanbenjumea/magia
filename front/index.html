@@ -2,17 +2,27 @@
 <html lang="es-ES" ng-app="app">
     <head>
         <title>MAGIA</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<!-- Google font -->
+        <link href="https://fonts.googleapis.com/css?family=Raleway:500,500i,700,700i" rel="stylesheet">
+
         <!-- Load Bootstrap CSS -->
-        <link rel="stylesheet" href="assets/css/magia.css">
         <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+        <link rel="stylesheet" href="assets/css/magia.css">
     </head>
     <body>
         <div data-ng-include="'app/layout/nav.html'"></div>
         
-        <div class="container" ng-view></div>
+        <div class="container container-fluid" ng-view></div>
         
         <div data-ng-include="'app/layout/modals/logics.html'"></div>
 
+        <div class="footer">
+            Este Aplicativo es desarrollado por Mauricio Moore Velasquez en ayuda de colaboradores, 
+            quién hace parte de la Escuela EDIPO y cursa el nivel de Enseñante Supervisor en estado Pendiente de habilitación. 
+            La Escuela EDIPO No tienen Absolutamente Ninguna Responsabilidad en los alcances y demandas del presente Aplicativo.
+        </div>
         <!-- Load Javascript Libraries (AngularJS, JQuery, Bootstrap) -->
         <script src="assets/js/libs/jquery/jquery.min.js"></script>
 
@@ -67,6 +77,12 @@
         <script src="app/core/login/login.js"></script>
         <script src="app/core/login/login.service.js"></script>
         <script src="app/core/login/login.route.js"></script>
+        
+        <script src="app/components/teaching/teaching.module.js"></script>
+        <script src="app/components/teaching/teaching.route.js"></script>
+        <script src="app/components/teaching/teaching.js"></script>
+        <script src="app/components/teaching/teaching.service.js"></script>
+        <script src="app/components/teaching/modals/comment/comment.js"></script>
         
         
         <script src="app/components/peirce/modals/result-new.js"></script>
