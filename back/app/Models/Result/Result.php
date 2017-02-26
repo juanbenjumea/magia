@@ -13,6 +13,10 @@ class Result extends Model {
                             'result_merge_id', 'name', 'completed'];
     protected $dates = ['created_at', 'updated_at', 'deleted_at'];
 
+    public function owner() {
+        return $this->belongsTo('\Magia\Models\Core\User', 'user_id', 'id');
+    }
+
     public function result_phrases() {
         return $this->hasMany('\Magia\Models\Result\ResultPhrase', 'result_id', 'id');
     }

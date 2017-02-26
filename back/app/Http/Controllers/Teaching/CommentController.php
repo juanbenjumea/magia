@@ -21,10 +21,49 @@ class CommentController extends Controller
     {
         $token = $request->input('token');
         $user = JWTAuth::toUser($token);
-
+        $user_id = $user->id;
+        $user_id = 1;
+        
+        
+        // /////////////////////////////////////////////////////////////////////////
+        // /////////////////////////////////////////////////////////////////////////
+        // L L E V O   7 5   M I N  U T O S   T R A B A J A N D O   E N   E S T O //
+        // /////////////////////////////////////////////////////////////////////////
+        // /////////////////////////////////////////////////////////////////////////
+        
+        
         // TODO_MAGIA: Filtrar los resultados por usuario
-        return Comment::orderBy('created_at', 'desc')
+        $comment_result =  Comment::whereHas('element', function($query) use ($user_id){
+                                $query->where('element_type', 'Magia\Models\Result\Result')
+                                        ->where('element.user_id', $user_id);
+                            })
+                        ->orderBy('created_at', 'desc')
                         ->get();
+        /*
+        $comment_result =  Comment::with(['element' => function($query) use ($user_id){
+                                $query->where('user_id', $user_id);
+                            }])
+                        ->whereElementType('Magia\Models\Result\Result')
+                        ->orderBy('created_at', 'desc')
+                        ->get();
+
+        $comment_phrase =  Comment::with(['element.result' => function($query) use ($user_id){
+                                $query->where('user_id', $user_id);
+                            }])
+                        ->whereElementType('Magia\Models\Result\ResultPhrase')
+                        ->orderBy('created_at', 'desc')
+                        ->get();
+
+        $comment_failed =  Comment::with(['element.result_phrase.result' => function($query) use ($user_id){
+                                $query->where('user_id', $user_id);
+                            }])
+                        ->whereElementType('Magia\Models\Result\Failed')
+                        ->orderBy('created_at', 'desc')
+                        ->get();
+
+        return [$comment_result, $comment_phrase, $comment_failed];
+        */
+        return [$comment_result];
     }
 
     /**

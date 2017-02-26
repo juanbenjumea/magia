@@ -41,6 +41,7 @@
                     .catch(getCommentsError);
 
             function getCommentsComplete(data, status, headers, config){
+                console.log(data);
                 return vm.comments = data;
             }
 

@@ -13,7 +13,7 @@ class Failed extends Model {
     protected $dates = ['created_at', 'updated_at', 'deleted_at'];
 
     public function result_phrase() {
-        return $this->belongsTo('\Magia\Result\ResultPhrase', 'result_phrase_id', 'id');
+        return $this->belongsTo('\Magia\Models\Result\ResultPhrase', 'result_phrase_id', 'id');
     }
 
     public function comments() {
