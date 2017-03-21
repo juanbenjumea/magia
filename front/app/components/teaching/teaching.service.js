@@ -15,6 +15,7 @@
             getComments : getComments,
             getUser : getUser,
             getUsers : getUsers,
+            highlightComment : highlightComment, 
             updateNotification : updateNotification
         };
         return service;
@@ -30,17 +31,25 @@
             return User.query({'token':token});
         }
 
-        function getComments(){
+        function getComments(user_id){
             var token = $window.sessionStorage.token;
             var Comment = $resource(API_URL + 'comment');
-            return Comment.query({'token':token});
+            return Comment.query({'token':token, 'user_id': user_id});
         }
 
         function createComment(new_comment) {
             var token = $window.sessionStorage.token;
             new_comment.token = token;
+
             var Comment = $resource(API_URL + 'comment');            
             return Comment.save(new_comment);
+        }
+
+        function highlightComment(comment_id, status) {
+            var comment = {'status' : status};
+
+            var Comment = $resource(API_URL + 'comment/:id', {id : '@id'}, {'update': { method:'PUT' }});
+            return Comment.update({'id' : comment_id}, comment);
         }
 
         function updateNotification(elment_id, elment_type, status_review) {
@@ -49,8 +58,6 @@
 
             switch(elment_type){
                 case 'rs':
-                    var Result = $resource(API_URL + 'result/:id', {id : '@id'}, {'update': { method:'PUT' }});
-                    return Result.update({'id' : elment_id}, element);
                 break;
 
                 case 'ph':

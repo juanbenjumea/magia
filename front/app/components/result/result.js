@@ -61,7 +61,6 @@
                     
             function getResultsComplete(data , status, headers, config){
                 vm.last_results = 1000000;
-                console.log(data);
                 return vm.results = data;
             }
             

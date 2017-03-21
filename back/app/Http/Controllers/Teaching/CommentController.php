@@ -20,26 +20,14 @@ class CommentController extends Controller
     public function index(Request $request)
     {
         $token = $request->input('token');
-        $user = JWTAuth::toUser($token);
-        $user_id = $user->id;
-        $user_id = 1;
-        
-        
-        // /////////////////////////////////////////////////////////////////////////
-        // /////////////////////////////////////////////////////////////////////////
-        // L L E V O   7 5   M I N  U T O S   T R A B A J A N D O   E N   E S T O //
-        // /////////////////////////////////////////////////////////////////////////
-        // /////////////////////////////////////////////////////////////////////////
-        
-        
-        // TODO_MAGIA: Filtrar los resultados por usuario
-        $comment_result =  Comment::whereHas('element', function($query) use ($user_id){
-                                $query->where('element_type', 'Magia\Models\Result\Result')
-                                        ->where('element.user_id', $user_id);
-                            })
-                        ->orderBy('created_at', 'desc')
-                        ->get();
-        /*
+        $user_id = $request->input('user_id');
+        if($user_id == 0){
+            $user = JWTAuth::toUser($token);
+            $user_id = $user->id;
+        }
+
+        $comments = array();
+
         $comment_result =  Comment::with(['element' => function($query) use ($user_id){
                                 $query->where('user_id', $user_id);
                             }])
@@ -47,23 +35,71 @@ class CommentController extends Controller
                         ->orderBy('created_at', 'desc')
                         ->get();
 
-        $comment_phrase =  Comment::with(['element.result' => function($query) use ($user_id){
-                                $query->where('user_id', $user_id);
+        foreach($comment_result as $c_res){
+            if($c_res->element){
+                $comments[$c_res->id] = $c_res;
+                
+                if($c_res->status === 0){
+                    $comment_update = Comment::find($c_res->id);
+                    $comment_update->status = 1;
+                    $comment_update->save();
+                }
+            }
+        }
+
+        $comment_phrase =  Comment::with(['element' => function($query) use ($user_id){
+                                $query->whereHas('result', function($q1) use ($user_id){
+                                    $q1->where('user_id', $user_id);
+                                });
                             }])
                         ->whereElementType('Magia\Models\Result\ResultPhrase')
                         ->orderBy('created_at', 'desc')
                         ->get();
 
-        $comment_failed =  Comment::with(['element.result_phrase.result' => function($query) use ($user_id){
-                                $query->where('user_id', $user_id);
+        foreach($comment_phrase as $c_phr){
+            foreach($comment_phrase as $c_phr){
+                if($c_phr->element){
+                    $comments[$c_phr->id] = $c_phr;
+                    
+                    if($c_phr->status === 0){
+                        $comment_update = Comment::find($c_phr->id);
+                        $comment_update->status = 1;
+                        $comment_update->save();
+                    }
+                }
+            }
+        }
+
+        $comment_failed =  Comment::with(['element' => function($query) use ($user_id){
+                                $query->whereHas('result_phrase.result', function($q1) use ($user_id){
+                                    $q1->where('user_id', $user_id);
+                                });
                             }])
                         ->whereElementType('Magia\Models\Result\Failed')
                         ->orderBy('created_at', 'desc')
                         ->get();
 
-        return [$comment_result, $comment_phrase, $comment_failed];
-        */
-        return [$comment_result];
+        foreach($comment_failed as $c_fail){
+            if($c_fail->element){
+                $comments[$c_fail->id] = $c_fail;
+                $comments[$c_phr->id] = $c_phr;
+                
+                if($c_fail->status === 0){
+                    $comment_update = Comment::find($c_phr->id);
+                    $comment_update->status = 1;
+                    $comment_update->save();
+                }
+            }
+        }
+
+        $date = array();
+        foreach ($comments as $key => $row)
+        {
+            $date[$key] = $row['created_at'];
+        }
+        array_multisort($date, SORT_DESC, $comments);
+
+        return $comments;
     }
 
     /**
@@ -90,12 +126,30 @@ class CommentController extends Controller
 
         // TODOMAGIA: Asiganar el admin
         //$admin = User::where('username', 'elmauriga@gmail.com')->get();
-
+        
+        switch($element_type){
+            case 'rs':
+                $type = 'Magia\Models\Result\Result';
+                break;
+            case 'ph':
+                $type = 'Magia\Models\Result\ResultPhrase';
+                break;
+            case 'ch':
+                $type = 'Magia\Models\Result\ResultPhrase';
+                break;
+            case 'dv':
+                $type = 'Magia\Models\Result\ResultPhrase';
+                break;
+            case 'fl':
+                $type = 'Magia\Models\Result\Failed';
+                break;
+        }
+        
         $new_comment = Comment::create(array(
             'user_teacher_id' => 1, 
             'comment' => $comment,
             'element_id' => $element_id,
-            'element_type' => $element_type,
+            'element_type' => $type,
             'status' => 0
         ));
         return $new_comment;
@@ -146,39 +200,13 @@ class CommentController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $result = Result::find($id);
-        if($request->has('name')){
-            $name = $request->input('name');
-            $duplicate = self::checkDuplicate($name, $id);
-            if($duplicate->count() === 0){
-                $result->name = $name;
-            }
-            else {
-                return response()->json([
-                    'message' => 'Nombre de resultado duplicado'
-                ], 500);
-            }
+        $comment = Comment::find($id);
+        if($request->has('status')){
+            $comment->status = $request->input('status');
         }
-        if($request->has('completed')){
-            $result->completed = $request->input('completed');
-        }
-        if($request->has('integration')){
-            $result = Result::find($request->input('son'));
-            $type = $request->input('integration');
-            switch($type){
-                case 'beyond':
-                    $result->result_beyond_id = $request->input('parent');
-                    break;
-                case 'sadhana':
-                    $result->result_sadhana_id = $request->input('parent');
-                    break;
-                case 'merge':
-                    $result->result_merge_id = $request->input('parent');
-                    break;
-            }
-        }
-        $result->save();
-        return $result;
+
+        $comment->save();
+        return $comment;
     }
 
     /**

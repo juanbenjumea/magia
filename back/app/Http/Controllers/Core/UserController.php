@@ -34,12 +34,15 @@ class UserController extends Controller
         return User::with(['results' => function ($query) {
                                     $query->orderBy('created_at', 'desc'); 
                                 }
+                            , 'results.comments'
                             , 'results.result_phrases' => function ($query) {
                                     $query->orderBy('created_at', 'desc'); 
                                 }
+                            , 'results.result_phrases.comments'
                             , 'results.result_phrases.failed'  => function ($query) {
                                     $query->orderBy('created_at', 'desc'); 
                                 }
+                            , 'results.result_phrases.failed.comments'
                             , 'results.beyond_son'
                             , 'results.beyond_parent'
                             , 'results.merge_sons'

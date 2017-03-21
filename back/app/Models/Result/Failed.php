@@ -17,6 +17,6 @@ class Failed extends Model {
     }
 
     public function comments() {
-        return $this->morphMany('\Magia\Models\Taching\Comment', 'element');
+        return $this->morphMany('\Magia\Models\Teaching\Comment', 'element');
     }
 }

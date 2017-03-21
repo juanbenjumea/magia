@@ -8,6 +8,6 @@
             'PEIRCE': 1,
             'WU-WEI': 2,
             '11 Pasos': 3,
-            '4 discursos': 4,
+            '4 discursos': 4
         });
 })();

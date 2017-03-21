@@ -2,13 +2,46 @@
     <div class="col-md-12 text-center">
         <h1>Centro de enseñanza</h1>
     </div>
-    <div class="col-md-12">
+</div>
+
+<div class="row">
+    <div class="col-md-12" ng-if="vm.comments.length === 0">
         No tienes comentarios disponibles
     </div>
+    <div class="col-md-12" ng-if="vm.comments.length > 0">
+        <h2>Comentarios</h2>
+
+        <table class="table table-striped">
+            <tr ng-repeat="comment in vm.comments" ng-class="comment.status === 0? 'highlight' : ''">
+                <td ng-switch on="comment.element_type">
+                    <div>{{ comment.created_at }}</div>
+                    <div ng-switch-when="Magia\Models\Result\Result">
+                        <strong>Resultado: </strong> {{ comment.element.name }}
+                    </div>
+                    <div ng-switch-when="Magia\Models\Result\ResultPhrase">
+                        <strong>Frase resultado: </strong> {{ comment.element.detail }}
+                    </div>
+                    <div ng-switch-when="Magia\Models\Result\Failed">
+                        <strong>Fallido: </strong> {{ comment.element.uncover }}
+                    </div>
+                    <div>
+                        <strong>Comentario: </strong>{{ comment.comment }}
+                    </div>
+                </td>
+                <td>
+                    <button class="btn btn-xs" ng-class="comment.status === 2? 'btn-success' : 'btn-default'" title="Destacado"
+                                ng-click="vm.highlightComment(comment.id, comment.status)">
+                            <span class="glyphicon glyphicon-record"></span>
+                    </button>
+                </td>
+            </tr>
+        </table>
+    </div>
 </div>
-<div class="new_line"></div>
+
 <div class="row" ng-if="vm.users.length > 0">
     <div class="col-md-12">
+        <h2>Usuarios</h2>
         <table class="table table-striped">
             <tr>
                 <th>Nombre</th>

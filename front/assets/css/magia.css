@@ -5,6 +5,7 @@
 body{
     background-color: #F7F4C5;
 }
+
 .footer {
     background-color: #4D3F31;
     border-top: none;
@@ -13,15 +14,22 @@ body{
     margin-top: 80px;
     text-align: center;
 }
+
 .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6{
     color: #4D3F31;
     font-family: 'Raleway', sans-serif;
 }
+
 .navbar-brand.logo-header{
     padding: 12px 15px 8px 15px;
 }
+
 .navbar-brand.logo-header img{
     height: 30px;
+}
+
+.highlight {
+    background-color: #f0ea8c;
 }
 
 .padding_right {

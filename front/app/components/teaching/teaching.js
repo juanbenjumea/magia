@@ -6,15 +6,16 @@
         .module('app.teaching')
         .controller('Teaching', Teaching);
 
-    Teaching.$inject = ['$uibModal', '$log', '$routeParams', '$location', 'teachingService'];
+    Teaching.$inject = ['$uibModal', '$log', '$routeParams', '$location', 'teachingService', '$window'];
 
-    function Teaching($uibModal, $log, $routeParams, $location, teachingService){
+    function Teaching($uibModal, $log, $routeParams, $location, teachingService, $window){
         var vm = this;
 
         // Bind variables
         vm.getComments = getComments;
         vm.getUser = getUser;
         vm.getUsers = getUsers;
+        vm.highlightComment = highlightComment;
         vm.modalComment = modalComment;
         vm.updateNotification = updateNotification;
         
@@ -31,7 +32,9 @@
                 return;
             }
             else {
-                return getUsers();
+                getUsers();
+                getComments(0);
+                return ;
             }
         }
 
@@ -121,6 +124,23 @@
             }
         }
 
+        function highlightComment(comment_id, comment_status){
+            
+            var status = (comment_status === 2)? 1 : 2; 
+            
+            return teachingService.highlightComment(comment_id, status).$promise
+                    .then(highlightCommentComplete)
+                    .catch(highlightCommentError);
+
+            function highlightCommentComplete(data , status, headers, config){
+                getComments(0);
+            }
+
+            function highlightCommentError(error){
+                
+            }
+        }
+
         function updateNotification(item_id, item_type, item_notification){
 
             return teachingService.updateNotification(item_id, item_type, item_notification).$promise
@@ -148,6 +168,7 @@
                                         'time' : result.created_at, 
                                         'detail' : result.name, 
                                         'notification' : notification, 
+                                        'comments' : result.comments, 
                                         'icon' :'flag', 
                                         'class' :'bold',
                                         'delete' : 'deleteResultPhrase'
@@ -161,6 +182,7 @@
                                                 'time' : phrase.created_at, 
                                                 'detail' : phrase.detail, 
                                                 'notification' : notification, 
+                                                'comments' : phrase.comments, 
                                                 'icon' :'star-empty', 
                                                 'class' :'bold',
                                                 'delete' : 'deleteResultPhrase'
@@ -174,6 +196,7 @@
                                                 'detail' : phrase.chaos, 
                                                 'icon' : 'cloud', 
                                                 'notification' : notification, 
+                                                'comments' : phrase.comments, 
                                                 'class' : '',
                                                 'delete' : 'deleteChaos'
                                             });
@@ -185,6 +208,7 @@
                                                 'time' : phrase.created_at, 
                                                 'detail' : phrase.deviation, 
                                                 'notification' : notification, 
+                                                'comments' : phrase.comments, 
                                                 'icon' : 'random', 
                                                 'class' : '',
                                                 'delete' : 'deleteDeviation'
@@ -199,6 +223,7 @@
                                                 'time' : failed.created_at, 
                                                 'detail' : detail, 
                                                 'notification' : notification, 
+                                                'comments' : failed.comments, 
                                                 'icon' : 'warning-sign', 
                                                 'class' : '',
                                                 'delete' : 'deleteFailed'
