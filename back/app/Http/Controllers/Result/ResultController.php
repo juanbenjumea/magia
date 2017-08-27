@@ -35,7 +35,7 @@ class ResultController extends Controller
                                 , 'merge_sons'
                                 , 'merge_parent'
                                 , 'sadhana_sons'
-                                , 'sadhana_parent'    
+                                , 'sadhana_parent'
                             ])
                         ->where('user_id', $user->id)
                         ->where(function ($query) {
@@ -67,12 +67,12 @@ class ResultController extends Controller
     public function store(Request $request)
     {
         $name = $request->input('name');
+        $token = $request->input('token');
+        $user = JWTAuth::toUser($token);
 
-        $duplicate = self::checkDuplicate($name);
+        $duplicate = self::checkDuplicate($name, $user->id);
 
         if($duplicate->count() === 0){
-            $token = $request->input('token');
-            $user = JWTAuth::toUser($token);
             $new_result = Result::create(array(
                 'user_id' => $user->id,
                 'name' => $name
@@ -106,15 +106,18 @@ class ResultController extends Controller
         return Result::with(['result_phrases' => function ($query) {
                                     $query->orderBy('created_at', 'desc'); 
                                 }
+                            , 'result_phrases.comments'
                             , 'result_phrases.failed'  => function ($query) {
                                     $query->orderBy('created_at', 'desc'); 
                                 }
+                            , 'result_phrases.failed.comments'
                             , 'beyond_son'
                             , 'beyond_parent'
                             , 'merge_sons'
                             , 'merge_parent.merge_sons'
                             , 'sadhana_sons'
                             , 'sadhana_parent.sadhana_sons'
+                            , 'comments'
                             ])
                         ->find($id);
     }
@@ -140,9 +143,12 @@ class ResultController extends Controller
     public function update(Request $request, $id)
     {
         $result = Result::find($id);
+        $token = $request->input('token');
+        $user = JWTAuth::toUser($token);
+        
         if($request->has('name')){
             $name = $request->input('name');
-            $duplicate = self::checkDuplicate($name, $id);
+            $duplicate = self::checkDuplicate($name, $user->id. $id);
             if($duplicate->count() === 0){
                 $result->name = $name;
             }
@@ -190,8 +196,10 @@ class ResultController extends Controller
     }
     
     
-    public static function checkDuplicate($name, $id = null) {
-        $result = Result::where('name', 'like', $name);
+    public static function checkDuplicate($name, $user_id, $id = null) {
+        
+        $result = Result::where('name', 'like', $name)
+                        ->where('user_id', $user_id);
         if($id){
             $result->where('id', '!=', $id);
         }

@@ -29,7 +29,7 @@ body{
 }
 
 .highlight {
-    background-color: #f0ea8c;
+    background-color: #f0ea8c !important;
 }
 
 .padding_right {

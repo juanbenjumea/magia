@@ -6,9 +6,9 @@
         .module('app.result')
         .controller('Result', Result);
 
-    Result.$inject = ['$uibModal', '$log', '$location', 'resultService'];
+    Result.$inject = ['$uibModal', '$log', '$location', 'resultService', 'teachingService', '$rootScope'];
 
-    function Result($uibModal, $log, $location, resultService){
+    function Result($uibModal, $log, $location, resultService, teachingService, $rootScope){
         var vm = this;
 
         // Bind variables
@@ -35,6 +35,7 @@
         vm.updateResult = updateResult;
         vm.updateResultPhrase = updateResultPhrase;
 
+        $rootScope.comments_count = 0;
         vm.flag_new_result = false;
         vm.flag_edit_result = false;
         vm.flag_selected_result = false;
@@ -51,7 +52,28 @@
         activate();
 
         function activate(){
+            getComments(0);
             return getResults();
+        }
+
+        function getComments(user_id){
+            return teachingService.getComments(user_id, 0).$promise
+                    .then(getCommentsComplete)
+                    .catch(getCommentsError);
+
+            function getCommentsComplete(data, status, headers, config){
+                console.log(data);
+                var comments = data;
+                angular.forEach(comments, function(value, key) {
+                    if(value.status === 0){
+                        $rootScope.comments_count++;
+                    }
+                });
+            }
+
+            function getCommentsError(error){
+                console.log(error);
+            }
         }
 
         function getResults(){
@@ -61,6 +83,7 @@
                     
             function getResultsComplete(data , status, headers, config){
                 vm.last_results = 1000000;
+                console.log(data);
                 return vm.results = data;
             }
             
@@ -134,8 +157,7 @@
         }
         
         function deleteHistoryItem(type, id){
-            console.log(type+' - '+id);
-            
+
             switch(type){
                 case 'ph':
                     vm.deleteResultPhrase(id);
@@ -404,10 +426,11 @@
             }
 
             function getResultComplete(data, status, headers, config){
+
                 vm.result_selected = data;
                 vm.flag_selected_result = true;
                 if(vm.result_selected.result_phrases.length > 0){
-
+                    vm.result_coments = vm.result_selected.comments;
                     vm.result_phrases = vm.result_selected.result_phrases;
                     vm.result_phrase_detail = vm.result_selected.result_phrases[0].detail;
                     vm.update_result_phrase.detail = vm.result_selected.result_phrases[0].detail;
@@ -439,7 +462,8 @@
                                             'detail' : value.detail, 
                                             'icon' :'star-empty', 
                                             'class' :'bold',
-                                            'delete' : 'deleteResultPhrase'
+                                            'delete' : 'deleteResultPhrase',
+                                            'comments' : value.comments
                                         });
                 }
                 if(value.chaos){
@@ -450,7 +474,8 @@
                                             'detail' : value.chaos, 
                                             'icon' : 'cloud', 
                                             'class' : '',
-                                            'delete' : 'deleteChaos'
+                                            'delete' : 'deleteChaos',
+                                            'comments' : []
                                         });
                 }
                 if(value.deviation){
@@ -461,7 +486,8 @@
                                             'detail' : value.deviation, 
                                             'icon' : 'random', 
                                             'class' : '',
-                                            'delete' : 'deleteDeviation'
+                                            'delete' : 'deleteDeviation',
+                                            'comments' : []
                                         });
                 }
                 angular.forEach(value.failed, function(val, k) {
@@ -473,7 +499,8 @@
                                             'detail' : detail, 
                                             'icon' : 'warning-sign', 
                                             'class' : '',
-                                            'delete' : 'deleteFailed'
+                                            'delete' : 'deleteFailed',
+                                            'comments' : val.comments
                                         });
                 });
             });

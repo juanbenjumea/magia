@@ -21,6 +21,7 @@ class CommentController extends Controller
     {
         $token = $request->input('token');
         $user_id = $request->input('user_id');
+        $read = $request->input('read');
         if($user_id == 0){
             $user = JWTAuth::toUser($token);
             $user_id = $user->id;
@@ -38,8 +39,8 @@ class CommentController extends Controller
         foreach($comment_result as $c_res){
             if($c_res->element){
                 $comments[$c_res->id] = $c_res;
-                
-                if($c_res->status === 0){
+
+                if($c_res->status === 0 && $read == 1){
                     $comment_update = Comment::find($c_res->id);
                     $comment_update->status = 1;
                     $comment_update->save();
@@ -60,8 +61,8 @@ class CommentController extends Controller
             foreach($comment_phrase as $c_phr){
                 if($c_phr->element){
                     $comments[$c_phr->id] = $c_phr;
-                    
-                    if($c_phr->status === 0){
+
+                    if($c_phr->status === 0 && $read == 1){
                         $comment_update = Comment::find($c_phr->id);
                         $comment_update->status = 1;
                         $comment_update->save();
@@ -82,10 +83,9 @@ class CommentController extends Controller
         foreach($comment_failed as $c_fail){
             if($c_fail->element){
                 $comments[$c_fail->id] = $c_fail;
-                $comments[$c_phr->id] = $c_phr;
-                
-                if($c_fail->status === 0){
-                    $comment_update = Comment::find($c_phr->id);
+
+                if($c_fail->status === 0 && $read == 1){
+                    $comment_update = Comment::find($c_fail->id);
                     $comment_update->status = 1;
                     $comment_update->save();
                 }

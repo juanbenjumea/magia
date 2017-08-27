@@ -6,9 +6,9 @@
         .module('app.teaching')
         .controller('Teaching', Teaching);
 
-    Teaching.$inject = ['$uibModal', '$log', '$routeParams', '$location', 'teachingService', '$window'];
+    Teaching.$inject = ['$uibModal', '$log', '$routeParams', '$location', 'teachingService', '$window', '$rootScope'];
 
-    function Teaching($uibModal, $log, $routeParams, $location, teachingService, $window){
+    function Teaching($uibModal, $log, $routeParams, $location, teachingService, $window, $rootScope){
         var vm = this;
 
         // Bind variables
@@ -19,6 +19,7 @@
         vm.modalComment = modalComment;
         vm.updateNotification = updateNotification;
         
+        $rootScope.comments_count = 0;
         vm.comments = [];
         vm.users = [];
         vm.user = {};
@@ -39,7 +40,7 @@
         }
 
         function getComments(user_id){
-            return teachingService.getComments(user_id).$promise
+            return teachingService.getComments(user_id, 1).$promise
                     .then(getCommentsComplete)
                     .catch(getCommentsError);
 
@@ -142,7 +143,7 @@
         }
 
         function updateNotification(item_id, item_type, item_notification){
-
+            
             return teachingService.updateNotification(item_id, item_type, item_notification).$promise
                     .then(updateNotificationComplete)
                     .catch(updateNotificationError);

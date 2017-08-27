@@ -56,7 +56,8 @@
                     ng-show="vm.results"
                     ng-model="vm.last_results" 
                     ng-change="vm.selectResult()" 
-                    ng-options="result.id as result.name for result in vm.results">
+                    ng-options="result.id as result.name for result in vm.results | filter: {completed: 0}">
+                    
                 <option value="">Selecciona</option>
             </select>
         </span>
@@ -248,7 +249,7 @@
             </div>
         </div>
         <button class="btn btn-primary" 
-                ng-disabled="!vm.flag_new_result"
+                ng-disabled="!vm.flag_selected_result"
                 ng-click="vm.completeResult()">
             <span class="glyphicon glyphicon-star"></span> Logrado
         </button>
@@ -272,12 +273,26 @@
                         </button>
                     </th>
                 </tr>
+                <tr ng-repeat="comment in vm.result_coments">
+                    <td><span class="glyphicon glyphicon-comment"></span></td>
+                    <td>{{ comment.created_at }}</td>
+                    <td>{{ comment.comment }}</td>
+                    <td></td>
+                </tr>
                 <tr ng-repeat="item in vm.history_table">
                     <td>
                         <span class="glyphicon glyphicon-{{ item.icon }}"></span>
                     </td>
                     <td>{{ item.time }}</td>
-                    <td class="{{ item.class }}">{{ item.detail }}</td>
+                    <td class="{{ item.class }}">
+                        {{ item.detail }}
+                        <div ng-show="item.comments.length > 0">
+                            <strong>Comentarios: </strong>
+                            <div ng-repeat="comment in item.comments">
+                                - {{ comment.comment }}
+                            </div>
+                        </div>
+                    </td>
                     <td>
                         <button class="btn btn-danger btn-xs btn-delete" title="Eliminar"
                                 ng-click="vm.deleteHistoryItem(item.type, item.id)"

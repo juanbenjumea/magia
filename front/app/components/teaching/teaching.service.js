@@ -31,10 +31,10 @@
             return User.query({'token':token});
         }
 
-        function getComments(user_id){
+        function getComments(user_id, read){
             var token = $window.sessionStorage.token;
             var Comment = $resource(API_URL + 'comment');
-            return Comment.query({'token':token, 'user_id': user_id});
+            return Comment.query({'token':token, 'user_id': user_id, 'read': read });
         }
 
         function createComment(new_comment) {
@@ -58,6 +58,8 @@
 
             switch(elment_type){
                 case 'rs':
+                    var Result = $resource(API_URL + 'result/:id', {id : '@id'}, {'update': { method:'PUT' }});
+                    return Result.update({'id' : elment_id}, element);
                 break;
 
                 case 'ph':
