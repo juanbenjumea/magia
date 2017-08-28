@@ -82,9 +82,9 @@
         <span class="text-info" ng-show="!vm.results">
             <label class="label_center">Cargando...</label>
         </span>
-        <button id="btn-add" class="btn btn-default">
+        <a id="btn-add" class="btn btn-default" href="#/report">
             <span class="glyphicon glyphicon-list-alt"></span> Ver todos
-        </button>
+        </a>
         <button id="btn-add" class="btn btn-success" ng-click="vm.toggleFlagNewResult(true)">
             <span class="glyphicon glyphicon-plus"></span> Nuevo resultado
         </button>
@@ -249,7 +249,8 @@
             </div>
         </div>
         <button class="btn btn-primary" 
-                ng-disabled="!vm.flag_selected_result"
+                ng-disabled="!vm.flag_selected_result || vm.selected_result_completed"
+                ng-class="vm.selected_result_completed? 'btn-success':'btn-primary'" 
                 ng-click="vm.completeResult()">
             <span class="glyphicon glyphicon-star"></span> Logrado
         </button>

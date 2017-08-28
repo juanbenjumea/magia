@@ -11,6 +11,7 @@
     function Report($uibModal, $log, $routeParams, $location, situationService, resultService){
         var vm = this;
 
+        vm.uncompleteResult = uncompleteResult;
         vm.results = [];
 
         activate();
@@ -25,7 +26,6 @@
                     .catch(getResultsError);
                     
             function getResultsComplete(data , status, headers, config){
-                console.log(data);
                 return vm.results = data;
             }
             
@@ -33,6 +33,22 @@
                 console.log(error);
             }
         }
+
+        function uncompleteResult(id){
+            
+            return resultService.uncompleteResult(id).$promise
+                    .then(uncompleteResultComplete)
+                    .catch(uncompleteResultError);
+
+            function uncompleteResultComplete(data , status, headers, config){
+                getResults();
+            }
+
+            function uncompleteResultError(error){
+            }
+        }
+
+
 
         // TODO_MAGIA: Refactorizar
         function modalOpenAddResult(size) {

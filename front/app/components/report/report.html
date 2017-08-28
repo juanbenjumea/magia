@@ -1,6 +1,15 @@
 
 <div class="row" ng-repeat="result in vm.results">
-    <h4>{{ result.name }}</h4>
+    <h4>
+        {{ result.name }} 
+        <span style="float: right">
+            <button class="btn btn-sm btn-success" 
+                    ng-if="result.completed == 1"
+                    ng-click="vm.uncompleteResult(result.id)">
+                <span class="glyphicon glyphicon-star"></span> Logrado
+            </button>
+        </span>
+    </h4>
     <table class="table table-striped">
         <tr ng-repeat="phrase in result.result_phrases">
             <td>{{ phrase.detail }}</td>

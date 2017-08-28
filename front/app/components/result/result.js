@@ -39,6 +39,7 @@
         vm.flag_new_result = false;
         vm.flag_edit_result = false;
         vm.flag_selected_result = false;
+        vm.selected_result_completed = false;
         vm.history_table = [];
         vm.integration_types = [];
         vm.new_result = {};
@@ -62,7 +63,7 @@
                     .catch(getCommentsError);
 
             function getCommentsComplete(data, status, headers, config){
-                console.log(data);
+
                 var comments = data;
                 angular.forEach(comments, function(value, key) {
                     if(value.status === 0){
@@ -223,7 +224,7 @@
                     .catch(completeResultError);
 
             function completeResultComplete(data , status, headers, config){
-                console.log('completado');
+                vm.selected_result_completed = true;
             }
 
             function completeResultError(error){
