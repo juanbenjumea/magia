@@ -29,6 +29,7 @@
             }
             
             function getLoginError(error){
+                $window.alert("Login error, email o password incorrectos \n" + error);
                 console.log(error);
             }
         }
